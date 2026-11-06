@@ -1,7 +1,8 @@
 {
-  "name": "Storan Dokumen Yayasan",
-  "short_name": "Storan Dokumen",
-  "description": "Storan dokumen Yayasan Sultan Haji Hassanal Bolkiah dengan carian di dalam fail.",
+  "id": "./",
+  "name": "SYSHHB IT Documents",
+  "short_name": "SYSHHB IT Documents",
+  "description": "SYSHHB IT Documents: Yayasan Sultan Haji Hassanal Bolkiah document storage with search inside files.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,9 +10,63 @@
   "background_color": "#0B331D",
   "theme_color": "#0B331D",
   "lang": "ms",
+  "categories": [
+    "productivity",
+    "business"
+  ],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Cari dokumen",
+      "short_name": "Cari",
+      "url": "./?go=search",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Muat naik dokumen",
+      "short_name": "Muat naik",
+      "url": "./?go=upload",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Urus pengguna",
+      "short_name": "Urus",
+      "url": "./?go=manage",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }
