@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-pc7I0Pj6GG5XL7gvWLTmjNwBp0QriFBKUYkRgPx8fks=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-yggWh7gO1RLAdwPsxTfmiLtpEQOqpgodRfLZFnVAAok=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1840,7 +1840,7 @@ function makeGraph(){
   const emitText = () => { clearTimeout(textTimer); textTimer = setTimeout(()=>{ onText && onText(new Map(textMap)); }, 120); };
   async function mutateIndex(fn){ const data = await mutateJson(INDEX_FILE, ()=>({v:1, docs:{}}), d=>{ d.docs = d.docs || {}; return fn(d); }); idx = data ? cleanIndex(data) : idx; idxCTag = null; emitDocs(); return data; }
   async function syncText(){
-    if(!cache) cache = await openTextCache();
+    if(!cache){ try{ cache = await openTextCache(); }catch(e){ console.warn("text cache unavailable", e); cache = {get:async()=>null, set:async()=>{}, del:()=>{}, clear:async()=>{}}; } }
     const need = [], keep = new Set();
     for(const d of Object.values(idx.docs)){
       keep.add(d.id);
@@ -1874,7 +1874,11 @@ function makeGraph(){
     kind:"graph", blobUrls:true,
     subscribe(docsCb, errCb){
       onDocs = docsCb; onErr = errCb;
-      refresh(true).catch(e=>{ onErr && onErr(e); });
+      const first = (n = 0) => refresh(true).catch(e=>{
+        if(e && (e.status===401 || e.status===403 || e.status===404)){ onErr && onErr(e); return; }
+        console.warn("sync, trying again", e); if(n < 4) setTimeout(()=>first(n+1), [1500,3000,6000,12000][n]);
+      });
+      first();
       const bad = e => { if(e && (e.status===401 || e.status===403) && onErr) onErr(e); };
       timer = setInterval(()=>{ if(!document.hidden) refresh(false).catch(bad); }, CFG.pollMs);
       document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) refresh(false).catch(bad); });
@@ -2176,7 +2180,7 @@ async function afterLogin(){
   if(state.role==="none") return;
   setSplash(L("Memuatkan dokumen…","Loading documents…"));
   backend.subscribe(docs=>{ state.docs = docs; state.ready = true; rebuildIndex(); render(); refreshUsage(); hideSplash(); handleGo(); },
-    e=>{ if(e && (e.status===401 || e.status===403 || e.status===404)) showGate("nostorage"); else { banner("Perpustakaan berhenti dikemas kini. Muat semula halaman untuk menyambung semula."); hideSplash(); } });
+    e=>{ if(e && (e.status===401 || e.status===403 || e.status===404)) showGate("nostorage"); else console.warn("sync problem", e); });
   backend.subscribeText(map=>{ state.text = map; state.textReady = true; rebuildIndex(); render(); });
   if(state.isAdmin) autoShare();
   startIdleWatch();
