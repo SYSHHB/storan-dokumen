@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-LTuIYKe1tpDisXdF2owgOL54Ld/paPfT8YDexaf5MVI=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-1N84DU2Yx5EguObiKt82ecnQUfOx6dpQapHyKLo3MgY=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -841,6 +841,25 @@ body{font-size:1rem}
 .improw small{display:block;color:var(--muted);word-break:break-word}
 .improw s{opacity:.7}.improw em{font-style:normal;color:var(--brand);font-weight:700}
 .imperrs{font-size:.85rem;color:var(--danger);max-height:22vh;overflow:auto;padding:6px 2px}
+.pdfhost{width:max-content;min-width:100%;padding:8px 0;touch-action:pan-x pan-y}
+.pdfpage{position:relative;margin:0 auto 10px;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.pdfpage canvas{display:block;width:100%;height:100%}
+.pdfpage .pdfph{position:absolute;inset:0;display:grid;place-items:center;color:#9aa;font-size:1.4rem;font-weight:700;pointer-events:none}
+.pdfpage.ready .pdfph{display:none}
+.preview.doc.pdfmode{background:#8a9593}
+.pdfpg{font-weight:700;color:var(--muted);min-width:76px;text-align:center}
+.pdfpg[hidden]{display:none}
+@media (max-width:760px){
+  #detailDlg .dlg-body{display:flex;flex-direction:column}
+  #detailDlg #viewBar{order:1;flex-wrap:nowrap;gap:6px;margin-bottom:8px}
+  #detailDlg #dPreview{order:2}
+  #detailDlg #dOcrNote{order:3;margin-top:10px}
+  #detailDlg #dText{order:4}
+  #detailDlg #dFacts{order:5;margin:14px 0 0}
+  #detailDlg .preview.doc{height:calc(100dvh - 232px)}
+  #viewBar .seg button{font-size:0;padding:9px 12px;gap:0}
+  .pdfpg{min-width:64px;font-size:.85rem}
+}
 .verline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 @media (max-width:760px){
   .toolbar select{display:none}
@@ -1008,6 +1027,7 @@ body{font-size:1rem}
         <button type="button" data-view="page" aria-pressed="false"><svg width="14" height="18" viewBox="0 0 14 18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="12" height="16" rx="2"/></svg>Potret <span style="font-weight:400">(seluruh halaman)</span></button>
         <button type="button" data-view="width" aria-pressed="true"><svg width="20" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="1" width="18" height="12" rx="2"/></svg>Landskap <span style="font-weight:400">(muat lebar)</span></button>
       </div>
+      <span id="pdfPg" class="pdfpg" hidden></span>
       <div class="zoom"><button type="button" data-zoom="-1" aria-label="Zum keluar">−</button><span id="zoomPct">100%</span><button type="button" data-zoom="1" aria-label="Zum masuk">+</button></div>
     </div>
     <div class="preview" id="dPreview"></div>
@@ -1593,7 +1613,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.11";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.13";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -2713,6 +2733,14 @@ function fitView(){
     const base = viewMode==="page" ? Math.min(availW/nw, availH/nh) : availW/nw;
     eff = base * zoomAdj; img.style.width = (nw*eff) + "px"; img.style.height = (nh*eff) + "px";
   }
+  if(pv.querySelector(".pdfhost") && pdfCur){
+    const pgs = pdfCur.pages, pageW = Math.max(...pgs.map(p=>p.w)), pageH = pgs[0].h;
+    const base = viewMode==="page" ? Math.min(availW/pageW, availH/pageH) : availW/pageW;
+    eff = base * zoomAdj; pdfCur.eff = eff;
+    pgs.forEach(p=>{ p.wrap.style.width = (p.w*eff) + "px"; p.wrap.style.height = (p.h*eff) + "px"; });
+    pgs.forEach(p=>{ if(p.vis) renderPdfPg(p); });
+    updatePdfPg();
+  }
   if(eff !== null) $("#zoomPct").textContent = Math.round(eff*100) + "%";
 }
 function fitDocx(){ fitView(); }
@@ -3439,7 +3467,7 @@ async function openDetail(id){
   $("#dEdit").hidden = !canEditDoc(d); $("#dDelete").hidden = !canDeleteDoc(d);
   $("#dEditFile").hidden = !canEditFile(d);
   $("#dUndo").hidden = !(canModify(d) && (d.prevAssetId || d.hasPrev));
-  $("#viewBar").hidden = !(g==="word"||g==="ppt"||g==="img"); zoomAdj = 1; syncViewBar(); $("#zoomPct").textContent = "100%";
+  $("#viewBar").hidden = !(g==="word"||g==="ppt"||g==="img"||(g==="pdf" && !pdfNative())); zoomAdj = 1; syncViewBar(); $("#zoomPct").textContent = "100%";
 
   // Text inside the file
   const raw = state.text.get(d.id) || "";
@@ -3458,12 +3486,17 @@ async function openDetail(id){
   }
 
   renderOcrNote(d); $("#dOnedrive").hidden = !(backend && backend.webUrl);
-  const pv = $("#dPreview"); pv.hidden = false; pv.innerHTML = `<p>Memuatkan pratonton…</p>`;
+  const pv = $("#dPreview"); pdfClose(); pv.classList.remove("pdfmode"); pv.hidden = false; pv.innerHTML = `<p>Memuatkan pratonton…</p>`;
   if(!$("#detailDlg").open) $("#detailDlg").showModal();
   if(h){ setTimeout(()=>{ const m = tpre.querySelector("mark"); if(m) m.scrollIntoView({block:"center"}); },60); }
   if(d.uploadedBy){ backend.names([d.uploadedBy]).then(ps=>{ const n = ps[d.uploadedBy] && ps[d.uploadedBy].name; if(n && current===d){ $("#byVal").textContent=n; $("#byLabel").hidden=$("#byVal").hidden=false; } }); }
   try{
-    if(g==="pdf" || g==="img"){
+    if(g==="pdf" && !pdfNative()){
+      const blob = await backend.getBlob(d); if(current!==d) return;
+      if(!(await sniffFile(blob, "pdf"))){ pv.innerHTML = `<p>Pratonton tidak tersedia untuk fail ini. Muat turun untuk membukanya.</p>`; return; }
+      try{ await showPdf(d, blob, pv); }
+      catch(err){ console.warn("PDF view", err); pdfClose(); pv.classList.remove("doc","pdfmode"); $("#viewBar").hidden = true; pv.innerHTML = `<p>${L("PDF tidak dapat dipaparkan dalam aplikasi ini.","The PDF couldn't be shown in the app.")}</p><p><button type="button" class="btn primary" id="pdfOpenOd">${L("Buka di OneDrive","Open in OneDrive")}</button> <button type="button" class="btn" id="pdfDl">${L("Muat turun","Download")}</button></p>`; }
+    } else if(g==="pdf" || g==="img"){
       const src = await backend.previewSrc(d); if(current!==d) return;
       if(!src){ pv.innerHTML = `<p>Pratonton tidak tersedia untuk fail ini. Muat turun untuk membukanya.</p>`; return; }
       if(backend.blobUrls) currentUrl = src;
@@ -3781,7 +3814,7 @@ function labelsMgmt(){
   syncInstallCard(); syncNet(); syncNavActive();
   { const q = $("#q"); if(q) q.placeholder = matchMedia("(max-width:760px)").matches ? L("Cari dokumen…","Search documents…") : L("Cari perkataan dalam fail, tajuk atau no. rujukan","Search words inside files, titles or reference no."); }
   const names = {all:L("Pilih semua","Select all"), cat:L("Kategori","Category"), tag:L("+ Tag","+ Tag"), del:L("Padam","Delete"), cancel:L("Batal","Cancel")};
-  document.querySelectorAll("#bulkBar [data-bulk]").forEach(b=>{ b.textContent = names[b.dataset.bulk]; }); syncFilterBtn(); labelXfer();
+  document.querySelectorAll("#bulkBar [data-bulk]").forEach(b=>{ b.textContent = names[b.dataset.bulk]; }); syncFilterBtn(); labelXfer(); labelView();
   $("#undoBtn").textContent = L("Buat asal","Undo"); $("#dOnedrive").textContent = L("Buka di OneDrive","Open in OneDrive");
   const sb = $("#selBtn"), t = L("Pilih beberapa dokumen","Select several"); sb.title = t; sb.setAttribute("aria-label", t); sb.setAttribute("aria-pressed", String(!!state.selMode));
   const m1 = document.querySelector("#manageBtn span"), m2 = document.querySelector("[data-nav=manage] span"); if(m1) m1.textContent = L("Urus","Manage"); if(m2) m2.textContent = L("Urus","Manage");
@@ -4036,6 +4069,11 @@ const XFER_COLS = [   // key, Malay, English
 ];
 const XFER_ALIAS = { id:["id"], title:["tajuk","title","nama","name","nama dokumen"], category:["kategori","category"], docDate:["tarikh dokumen","document date","tarikh","date"], ref:["no. rujukan","no rujukan","rujukan","reference no.","reference no","reference","ref"], tags:["tag","tags"], notes:["catatan","notes","note"] };
 const xferVal = (d,k) => k==="tags" ? (d.tags||[]).join(", ") : k==="uploadedAt" ? String(d.uploadedAt||"").slice(0,10) : String(d[k] ?? "");
+function labelView(){
+  const a = document.querySelector("#viewBar [data-view=page]"), b = document.querySelector("#viewBar [data-view=width]");
+  if(a){ a.setAttribute("aria-label", L("Seluruh halaman (potret)","Whole page (portrait)")); a.title = a.getAttribute("aria-label"); }
+  if(b){ b.setAttribute("aria-label", L("Muat lebar (landskap)","Fit width (landscape)")); b.title = b.getAttribute("aria-label"); }
+}
 function labelXfer(){
   const t = L("Eksport / Import","Export / Import"), b = $("#xferBtn"), b2 = $("#xferBtn2");
   if(b){ b.title = t; b.setAttribute("aria-label", t); } if(b2){ const s = b2.querySelector("span"); if(s) s.textContent = t; }
@@ -4184,6 +4222,79 @@ $("#sheet").addEventListener("click", async e=>{
     busy(false);
   }
 });
+
+/* ---------- PDF viewer that works on phones ---------- */
+let pdfCur = null;
+// desktop browsers can show a PDF in a frame; phones cannot, so the app draws the pages itself
+const pdfNative = () => CFG.pdfMode==="native" || (CFG.pdfMode!=="canvas" && navigator.pdfViewerEnabled===true && !matchMedia("(pointer: coarse)").matches);
+function pdfClose(){
+  if(pdfCur){ try{ pdfCur.obs.disconnect(); }catch(e){} try{ pdfCur.pages.forEach(p=>{ if(p.task) p.task.cancel(); }); pdfCur.pdf.destroy(); }catch(e){} pdfCur = null; }
+  const b = document.getElementById("pdfPg"); if(b) b.hidden = true;
+}
+async function showPdf(d, blob, pv){
+  pdfClose(); pv.classList.add("doc","pdfmode"); pv.innerHTML = `<p>${L("Membuka PDF…","Opening PDF…")}</p>`;
+  const lib = await pdfLib(), pdf = await lib.getDocument({data:new Uint8Array(await blob.arrayBuffer()), isEvalSupported:false, disableFontFace:true}).promise;
+  if(current!==d){ try{ pdf.destroy(); }catch(e){} return; }
+  const host = document.createElement("div"); host.className = "pdfhost"; pv.innerHTML = ""; pv.appendChild(host);
+  const pages = [], first = await pdf.getPage(1), v1 = first.getViewport({scale:1});
+  for(let i=1; i<=pdf.numPages; i++){
+    let page = i===1 ? first : null, w = v1.width, h = v1.height;
+    if(i>1 && i<=60){ page = await pdf.getPage(i); const v = page.getViewport({scale:1}); w = v.width; h = v.height; if(current!==d){ try{ pdf.destroy(); }catch(e){} return; } }   // long files: sizes of the rest are learned when each page is drawn
+    const wrap = document.createElement("div"); wrap.className = "pdfpage"; wrap.dataset.p = i; wrap.innerHTML = `<canvas></canvas><span class="pdfph">${i}</span>`; host.appendChild(wrap);
+    pages.push({i, page, w, h, wrap, canvas:wrap.firstChild, key:"", task:null, vis:false});
+  }
+  pdfCur = {pdf, pages, host, eff:1, obs:null};
+  const obs = new IntersectionObserver(es=>es.forEach(en=>{
+    const pg = pages[+en.target.dataset.p - 1]; pg.vis = en.isIntersecting;
+    if(en.isIntersecting) renderPdfPg(pg);
+    else { if(pg.task){ try{ pg.task.cancel(); }catch(e){} } pg.key = ""; pg.canvas.width = pg.canvas.height = 0; pg.wrap.classList.remove("ready"); }   // free memory for pages far away
+  }), {root:pv, rootMargin:"900px 0px"});
+  pages.forEach(p=>obs.observe(p.wrap)); pdfCur.obs = obs;
+  $("#viewBar").hidden = false; fitView(); pv.scrollTop = 0;
+}
+async function renderPdfPg(pg){
+  const c = pdfCur; if(!c || !pg) return;
+  if(!pg.page){ try{ pg.page = await c.pdf.getPage(pg.i); }catch(e){ return; } if(pdfCur!==c) return; const v = pg.page.getViewport({scale:1}); pg.w = v.width; pg.h = v.height; fitView(); return; }
+  const dpr = Math.min(window.devicePixelRatio || 1, 2.5), eff = c.eff || 1, key = eff.toFixed(3) + "@" + dpr;
+  if(pg.key===key) return; pg.key = key; if(pg.task){ try{ pg.task.cancel(); }catch(e){} }
+  const scale = Math.min(eff*dpr, Math.sqrt(14e6 / (pg.w*pg.h))), vp = pg.page.getViewport({scale}), cv = pg.canvas;
+  cv.width = Math.floor(vp.width); cv.height = Math.floor(vp.height);
+  const ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0,0,cv.width,cv.height);
+  try{ pg.task = pg.page.render({canvasContext:ctx, canvas:cv, viewport:vp}); await pg.task.promise; if(pdfCur===c) pg.wrap.classList.add("ready"); }
+  catch(e){ if(!(e && e.name==="RenderingCancelledException")){ pg.key = ""; console.warn("PDF page", pg.i, e); } }
+}
+function updatePdfPg(){
+  const b = document.getElementById("pdfPg"), pv = $("#dPreview"); if(!b) return;
+  if(!pdfCur){ b.hidden = true; return; }
+  const mid = pv.scrollTop + pv.clientHeight/2; let cur = 1;
+  for(const p of pdfCur.pages){ if(p.wrap.offsetTop <= mid) cur = p.i; else break; }
+  if(pv.scrollTop + pv.clientHeight >= pv.scrollHeight - 6) cur = pdfCur.pdf.numPages;
+  b.hidden = false; b.textContent = `${L("Hal.","Page")} ${cur} / ${pdfCur.pdf.numPages}`;
+}
+$("#dPreview").addEventListener("scroll", ()=>{ if(pdfCur) updatePdfPg(); }, {passive:true});
+$("#detailDlg").addEventListener("close", pdfClose);
+$("#dPreview").addEventListener("click", e=>{
+  if(e.target.closest("#pdfOpenOd") && current) openInOneDrive(current);
+  if(e.target.closest("#pdfDl")) $("#dDownload").click();
+});
+// pinch to zoom
+{ const pv = $("#dPreview"); let d0 = 0, z0 = 1, cx = 0, cy = 0, on = false, kk = 1;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  pv.addEventListener("touchstart", e=>{
+    if(!pdfCur || e.touches.length!==2) return; on = true; d0 = dist(e.touches); z0 = zoomAdj; kk = 1;
+    const r = pv.getBoundingClientRect(); cx = (e.touches[0].clientX + e.touches[1].clientX)/2 - r.left; cy = (e.touches[0].clientY + e.touches[1].clientY)/2 - r.top;
+  }, {passive:true});
+  pv.addEventListener("touchmove", e=>{
+    if(!on || !pdfCur || e.touches.length!==2) return;
+    const nz = Math.min(4, Math.max(0.4, z0 * dist(e.touches) / d0)); kk = nz / z0;
+    pdfCur.host.style.transformOrigin = `${pv.scrollLeft + cx}px ${pv.scrollTop + cy}px`; pdfCur.host.style.transform = `scale(${kk})`;
+  }, {passive:true});
+  pv.addEventListener("touchend", e=>{
+    if(!on || e.touches.length>=2) return; on = false;
+    if(pdfCur){ pdfCur.host.style.transform = ""; pdfCur.host.style.transformOrigin = ""; }
+    if(pdfCur && Math.abs(kk-1) > 0.02){ const sl = pv.scrollLeft, st = pv.scrollTop; zoomAdj = Math.min(4, Math.max(0.4, z0*kk)); fitView(); pv.scrollLeft = (sl+cx)*kk - cx; pv.scrollTop = (st+cy)*kk - cy; }
+  }, {passive:true});
+}
 
 function syncLayout(){ document.querySelectorAll("[data-layout]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.layout===state.layout))); }
 try{ state.layout = localStorage.getItem("syshhb-layout") || (matchMedia("(max-width: 760px)").matches ? "list" : "list"); }catch(e){ state.layout = "list"; }
