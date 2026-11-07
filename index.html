@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-TWwZtblJ2zVWu9iuKGV0w6+QsTe49fO6mVnGl6VseBs=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-YjidwmNC/UYmC1Tmd0jbe8JEXXIsAudPzeb5IJW1JHE=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1593,7 +1593,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.9";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.10";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -1714,16 +1714,17 @@ async function uploadLarge(rel, blob, onProgress){
   return last;
 }
 const uploadFile = (rel, blob, onProgress) => blob.size <= 4*1024*1024 ? putSmall(rel, blob, blob.type || "application/octet-stream") : uploadLarge(rel, blob, onProgress);
-async function fetchUrlOrContent(meta, rel){
+async function fetchUrlOrContent(meta, rel, fresh){
   const url = meta && meta["@microsoft.graph.downloadUrl"]; let res = null;
-  if(url){ try{ res = await fetch(url); }catch(e){ res = null; } }
-  if(!res || !res.ok) res = await gfetch(contentPath(rel));
+  if(fresh){ try{ res = await gfetch(contentPath(rel), {cache:"no-store"}); }catch(e){ res = null; } }
+  if(!res && url){ try{ res = await fetch(url, {cache:"no-store"}); }catch(e){ res = null; } }
+  if(!res || !res.ok) res = await gfetch(contentPath(rel), {cache:"no-store"});
   return res;
 }
 async function fetchBlob(rel){ const meta = await gjson(itemPath(rel)); return await (await fetchUrlOrContent(meta, rel)).blob(); }
-async function readJson(rel){
+async function readJson(rel, fresh){
   let meta; try{ meta = await gjson(itemPath(rel)); }catch(e){ if(e.status===404) return null; throw e; }
-  const res = await fetchUrlOrContent(meta, rel);
+  const res = await fetchUrlOrContent(meta, rel, fresh);
   const txt = await res.text(); if(txt.length > 25000000) throw {status:413, code:"too_large", message:"file too big"};
   return {data: JSON.parse(txt), etag: meta.eTag, cTag: meta.cTag, id: meta.id};
 }
@@ -1836,15 +1837,30 @@ function safeTable(ws){
 }
 
 /* users (roles) */
-async function loadUsers(){
-  let r = null, file = USERS_FILE;
-  try{ r = await readJson(USERS_FILE); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; }   // no access to the admin folder: carry on with the older location
-  if(!r){ try{ const o = await readJson(OLD_USERS_FILE); if(o){ r = o; file = OLD_USERS_FILE; } }catch(e){} }
-  usersFile = r ? file : USERS_FILE;
-  state.members = cleanUsers(r && r.data && r.data.users);
-  state.usersCTag = r ? r.cTag : "";
+async function loadUsers(opts){
+  let a = null, b = null;
+  try{
+    try{ a = await readJson(USERS_FILE, true); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; }   // no access to the admin folder: carry on with the older location
+    if(!a){ try{ b = await readJson(OLD_USERS_FILE, true); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; } }
+  }catch(e){ state.usersOk = false; throw e; }
+  if(!a && !b && opts && opts.poll && state.members && state.members.size) return;   // a hiccup while checking: keep the list we have
+  const r = a || b; usersFile = a ? USERS_FILE : b ? OLD_USERS_FILE : USERS_FILE;
+  const users = cleanUsers(r && r.data && r.data.users), fix = applyPending(users);
+  state.members = users; state.usersCTag = r ? r.cTag : ""; state.usersOk = true;
+  if(fix.length) setTimeout(()=>repairUsers(fix), 1500);
 }
-async function saveUsers(fn){
+async function loadUsersRetry(){
+  const delays = [800,1600,3200];
+  for(let i=0;;i++){
+    try{ await loadUsers(); return true; }
+    catch(e){
+      console.warn("users, trying again", e);
+      if(i >= delays.length){ setTimeout(()=>loadUsersRetry().then(ok=>{ if(ok){ applyRole(); if($("#accessDlg").open && state.isAdmin) openAccess(); } }).catch(()=>{}), 15000); return false; }
+      await sleep(delays[i]);
+    }
+  }
+}
+async function saveUsers(fn, check){
   const run = f => mutateJson(f, ()=>({v:1, users:{}}), d=>{ d.users = d.users || {}; return fn(d.users); });
   let data;
   if(usersFile === OLD_USERS_FILE){ data = await run(OLD_USERS_FILE); }
@@ -1858,7 +1874,37 @@ async function saveUsers(fn){
       data = await run(OLD_USERS_FILE); usersFile = OLD_USERS_FILE;
     }
   }
-  state.members = cleanUsers(data && data.users);
+  state.members = cleanUsers(data && data.users); state.usersOk = true;
+  return check ? verifyUsers(usersFile, check) : true;
+}
+// read the list back from OneDrive and make sure the change is really there (OneDrive can take a few seconds to catch up)
+async function verifyUsers(file, check){
+  for(const ms of [0,500,1000,2000,3000,4000]){
+    if(ms) await sleep(ms);
+    try{ const r = await readJson(file, true), m = cleanUsers(r && r.data && r.data.users), got = m.get(check.id); if(check.role ? (got && got.role===check.role) : !got) return true; }catch(e){}
+  }
+  return false;
+}
+// changes made on this device in the last minutes are remembered, so a quick refresh never loses them
+const PEND_KEY = () => "syshhb-pend-" + (state.uid || "");
+function pendRead(){ try{ return JSON.parse(localStorage.getItem(PEND_KEY()) || "[]"); }catch(e){ return []; } }
+function pendWrite(a){ try{ localStorage.setItem(PEND_KEY(), JSON.stringify(a.slice(-20))); }catch(e){} }
+function rememberPending(id, rec){ pendWrite([...pendRead().filter(p=>p.id!==id), {id, rec, at:Date.now()}]); }
+function donePending(id){ pendWrite(pendRead().map(p=>p.id===id ? {...p, doneAt:Date.now()} : p)); }
+function dropPending(id){ pendWrite(pendRead().filter(p=>p.id!==id)); }
+function pendingUsers(){ const now = Date.now(); return pendRead().filter(p=>p && p.id && ((!p.doneAt && now - p.at < 10*60000) || (p.doneAt && now - p.doneAt < 3*60000))); }
+function applyPending(users){
+  const fix = [];
+  for(const p of pendingUsers()){
+    const cur = users.get(p.id);
+    if(p.rec){ if(!cur || cur.role!==p.rec.role){ users.set(p.id, {name:cleanStr(p.rec.name,120), role:p.rec.role, addedAt:cleanStr(p.rec.addedAt,40), addedBy:lc(cleanStr(p.rec.addedBy,120)), updatedAt:cleanStr(p.rec.updatedAt,40)}); fix.push(p); } }
+    else if(cur){ users.delete(p.id); fix.push(p); }
+  }
+  return fix;
+}
+async function repairUsers(fix){
+  try{ await saveUsers(u=>{ let ch = false; for(const p of fix){ if(p.rec){ if(!u[p.id] || u[p.id].role!==p.rec.role){ u[p.id] = p.rec; ch = true; } } else if(u[p.id]){ delete u[p.id]; ch = true; } } return ch ? undefined : false; }); }
+  catch(e){ console.warn("repair users", e); }
 }
 async function searchUsers(q){
   const q1 = q.replace(/'/g,"''");
@@ -1918,7 +1964,7 @@ function makeGraph(){
       }
       let um = null; try{ um = await gjson(itemPath(usersFile) + "?$select=cTag"); }catch(e){ if(e.status!==404 && e.status!==403) throw e; }
       const ut = um ? um.cTag : "none";
-      if(ut !== (state.usersCTag || "none")){ await loadUsers(); applyRole(); if($("#accessDlg").open && state.isAdmin) openAccess(); }
+      if(ut !== (state.usersCTag || "none")){ await loadUsers({poll:true}); applyRole(); if($("#accessDlg").open && state.isAdmin) openAccess(); }
     }finally{ busy = false; }
   }
   const api = {
@@ -2227,7 +2273,7 @@ async function afterLogin(){
   setSplashStep(3);
   backend = makeGraph();
   if(CFG.testHooks){ window.__backend = backend; window.__t = {hardenDom, cleanDoc, cleanUsers, cleanEv, sniffFile, putSmall, gjson, readJson, USERS_FILE, CFG}; }
-  try{ await loadUsers(); }catch(e){ console.warn("users", e); }
+  await loadUsersRetry();
   state.membersReady = true; applyRole();
   if(state.role==="none") return;
   setSplash(L("Memuatkan dokumen…","Loading documents…"));
@@ -2838,11 +2884,12 @@ async function setRole(id, role, btn){
   const cur = state.members.get(id); if(!cur || cur.role===role) return;
   const box = btn.closest(".useg"); box.classList.add("busy");
   try{
-    await saveUsers(u=>{ if(!u[id]) return false; u[id].role = role; u[id].updatedAt = nowIso(); });
+    rememberPending(id, {...cur, role, updatedAt:nowIso()});
+    await saveUsers(u=>{ if(!u[id]) return false; u[id].role = role; u[id].updatedAt = nowIso(); }, {id, role}); donePending(id);
     audit("userrole", null, `${nameOf(id)} → ${ROLE_LABEL[role]}`); applyRole();
     try{ await shareUser(id, role); toast(L("Peranan dikemas kini dan akses OneDrive diselaraskan","Role updated and OneDrive access synced")); }
     catch(e2){ toast(L("Peranan dikemas kini, tetapi akses OneDrive belum diselaraskan. ","Role updated, but OneDrive access isn't synced yet. ") + shareWhy(e2)); }
-  }catch(err){ toast(errMsg(err)); }
+  }catch(err){ dropPending(id); toast(errMsg(err)); }
   openAccess();
 }
 function usersPane(){
@@ -2855,7 +2902,7 @@ function usersPane(){
   const status = (id, want) => `<small class="shst" data-share-for="${esc(id)}" data-want="${want}"></small>`;
   const head = (id, name) => `<div class="uhead"><img src="${esc(avatarFor(name))}" alt=""><div class="umain"><b>${esc(name)}</b><small>${esc(id)}</small>${status(id, "write")}</div>${docsBtn(id)}</div>`;
   const seg = (id, role, dis) => `<div class="useg" role="group" aria-label="${L("Peranan","Role")}">${["admin","uploader","viewer"].map(r=>`<button type="button" data-setrole="${r}" data-uid="${esc(id)}" aria-pressed="${role===r}" ${dis ? "disabled" : ""}>${ROLE_LABEL[r]}</button>`).join("")}</div>`;
-  let h = `<div class="utools"><input id="userFilter" type="search" placeholder="${L("Cari pengguna…","Search users…")}" aria-label="${L("Cari pengguna","Search users")}" autocomplete="off"><button type="button" class="btn primary" id="addToggle">＋ ${L("Tambah","Add")}</button></div>
+  let h = (state.usersOk===false ? `<div class="adderr" role="alert"><b>${L("Senarai pengguna belum dapat dimuatkan.","The user list could not be loaded yet.")}</b><div>${L("Pengguna yang ditambah mungkin belum kelihatan. Tekan Cuba lagi.","Added users may not show yet. Press Try again.")}</div><button type="button" class="btn" id="retryUsers" style="margin-top:8px">${L("Cuba lagi","Try again")}</button></div>` : "") + `<div class="utools"><input id="userFilter" type="search" placeholder="${L("Cari pengguna…","Search users…")}" aria-label="${L("Cari pengguna","Search users")}" autocomplete="off"><button type="button" class="btn primary" id="addToggle">＋ ${L("Tambah","Add")}</button></div>
     <div class="adduser addbox" id="addBox" ${(state.addOpen || pick) ? "" : "hidden"}>
       <div class="usearch"><input id="memberSearch" type="search" placeholder="${L("Taip nama atau e-mel syayasan.edu.bn","Type a name or syayasan.edu.bn email")}" autocomplete="off" aria-label="${L("Cari seseorang","Find a person")}"><div class="hits" id="memberHits" hidden></div></div>
       <div id="pickBox">${pick ? `<span class="picked"><img src="${esc(avatarFor(pick.name||pick.email))}" alt=""><span></span></span>` : ""}</div>
@@ -2952,6 +2999,8 @@ $("#accessBody").addEventListener("input", async e=>{
 $("#accessBody").addEventListener("click", async e=>{
   if(e.target.closest("#signOutBtn")){ doLogout(); return; }
   if(e.target.closest("#updApp")){ hardRefresh(); return; }
+  const ru = e.target.closest("#retryUsers");
+  if(ru){ ru.disabled = true; try{ await loadUsers(); applyRole(); }catch(err){ toast(errMsg(err)); } openAccess(); return; }
   const dg = e.target.closest("#diagBtn");
   if(dg){
     dg.disabled = true; const t0 = dg.textContent; dg.textContent = L("Memeriksa…","Checking…"); busy(true);
@@ -2983,13 +3032,15 @@ $("#accessBody").addEventListener("click", async e=>{
   const h = e.target.closest("[data-pick]"); if(h && h._p){ pick = h._p; if(!pick.name){ const info = await lookupUser(pick.email); pick = {email:info.email || pick.email, name:info.name || pick.email.split("@")[0]}; } $("#memberSearch").value = ""; openAccess(); return; }
   const a = e.target.closest("#addMember");
   if(a && pick){
-    a.disabled = true; const role = newRoleVal, pp = pick, id = lc(pp.email);
-    try{ await saveUsers(u=>{ u[id] = {name:pp.name || id.split("@")[0], role, addedAt:nowIso(), addedBy:state.uid}; }); pick = null; audit("useradd", null, `${pp.name||pp.email} sebagai ${ROLE_LABEL[role]}`);
+    a.disabled = true; const role = newRoleVal, pp = pick, id = lc(pp.email); let verified = true;
+    const rec = {name:pp.name || id.split("@")[0], role, addedAt:nowIso(), addedBy:state.uid, updatedAt:nowIso()};
+    a.textContent = L("Menyimpan dan mengesahkan…","Saving and checking…"); rememberPending(id, rec);
+    try{ verified = await saveUsers(u=>{ u[id] = rec; }, {id, role}); donePending(id); pick = null; audit("useradd", null, `${pp.name||pp.email} sebagai ${ROLE_LABEL[role]}`);
       a.textContent = L("Mengongsi di OneDrive…","Sharing in OneDrive…");
-      try{ await shareUser(id, role); toast(L(`${pp.name||pp.email} ditambah dan dikongsi di OneDrive`,`${pp.name||pp.email} added and shared in OneDrive`)); }
+      try{ await shareUser(id, role); toast(L(`${pp.name||pp.email} ditambah dan dikongsi di OneDrive`,`${pp.name||pp.email} added and shared in OneDrive`) + (verified ? "" : L(" OneDrive belum mengesahkan simpanan; jika tiada selepas muat semula, tunggu seminit."," OneDrive hasn't confirmed the save yet; if it is missing after a reload, wait a minute."))); }
       catch(e2){ console.warn(e2); toast(L(`${pp.name||pp.email} ditambah, tetapi belum dikongsi di OneDrive. `,`${pp.name||pp.email} added, but not shared in OneDrive yet. `) + shareWhy(e2)); }
       openAccess(); }
-    catch(err){ console.warn("add user", err); showAddError(err); toast(errMsg(err)); a.disabled = false; }
+    catch(err){ console.warn("add user", err); dropPending(id); showAddError(err); toast(errMsg(err)); a.disabled = false; }
     return;
   }
   const r = e.target.closest("[data-remove]");
@@ -2997,11 +3048,12 @@ $("#accessBody").addEventListener("click", async e=>{
     const id = r.dataset.remove;
     if(removeArm!==id){ removeArm = id; r.textContent = "Sahkan"; return; }
     removeArm = null; r.disabled = true; const nm = nameOf(id);
-    try{ await saveUsers(u=>{ if(!(id in u)) return false; delete u[id]; }); audit("userremove", null, nm);
+    rememberPending(id, null);
+    try{ await saveUsers(u=>{ if(!(id in u)) return false; delete u[id]; }, {id, role:null}); donePending(id); audit("userremove", null, nm);
       try{ await unshareUser(id); toast(L(`${nm} dibuang dan akses OneDrive ditarik balik`,`${nm} removed and OneDrive access taken back`)); }
       catch(e2){ console.warn(e2); toast(L(`${nm} dibuang, tetapi akses OneDrive belum ditarik balik. `,`${nm} removed, but their OneDrive access wasn't taken back yet. `) + shareWhy(e2)); }
       openAccess(); }
-    catch(err){ toast(errMsg(err)); r.disabled = false; }
+    catch(err){ dropPending(id); toast(errMsg(err)); r.disabled = false; }
   }
 });
 
