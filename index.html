@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-MZeTZ+yxqYL9op9/9Nrse73F2JbXZfcqnmv0RYryqYY=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-5AOUnv5vsQ5z5yQaLNi48WPHM4y02tVkwltM8wjX3VA=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -818,6 +818,15 @@ body{font-size:1rem}
 #actBar[hidden]{display:none}
 #actBar::before{content:"";display:block;height:100%;width:40%;border-radius:3px;background:linear-gradient(90deg,#30B448,#FCEE33);animation:sp-slide 1.1s ease-in-out infinite}
 #list.refreshing{opacity:.5;transition:opacity .2s;pointer-events:none}
+.adderr{margin-top:10px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--danger) 10%,var(--surface));border:1px solid var(--danger);font-size:.92rem}
+.adderr pre,.diagpre{white-space:pre-wrap;word-break:break-word;font-size:.78rem;margin:6px 0;padding:8px;border-radius:8px;background:var(--sunk)}
+.adderr summary{cursor:pointer;margin-top:6px;font-weight:700}
+.catchips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.catchip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:9px 15px;font-weight:700;font-size:.93rem;min-height:42px;cursor:pointer;transition:background .15s,color .15s,border-color .15s,transform .1s}
+.catchip:hover{border-color:var(--gold)}
+.catchip:active{transform:scale(.96)}
+.catchip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+#sheet .catchip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
 .verline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 @media (max-width:760px){
   .toolbar select{display:none}
@@ -958,7 +967,7 @@ body{font-size:1rem}
     </label>
     <div class="flist" id="flist"></div>
     <div class="grid2">
-      <label class="field"><span>Kategori</span><input id="upCat" list="catOptions" placeholder="cth. Pekeliling"></label>
+      <div class="field"><span>Kategori</span><div class="catchips" id="upCatChips"></div><input id="upCat" autocomplete="off" placeholder="Atau taip kategori baharu…"></div>
       <label class="field"><span>Tarikh dokumen</span><input id="upDate" type="date"></label>
     </div>
     <label class="field"><span>No. rujukan <small>(pilihan)</small></span><input id="upRef" placeholder="cth. KPM/SYS/100/2026"></label>
@@ -1004,7 +1013,7 @@ body{font-size:1rem}
   <div class="dlg-body">
     <label class="field"><span>Tajuk</span><input id="edTitle"></label>
     <div class="grid2">
-      <label class="field"><span>Kategori</span><input id="edCat" list="catOptions"></label>
+      <div class="field"><span>Kategori</span><div class="catchips" id="edCatChips"></div><input id="edCat" autocomplete="off" placeholder="Atau taip kategori baharu…"></div>
       <label class="field"><span>Tarikh dokumen</span><input id="edDate" type="date"></label>
     </div>
     <label class="field"><span>No. rujukan</span><input id="edRef"></label>
@@ -1358,7 +1367,7 @@ function anchorDownload(blob,name){ name = String(name||"fail").replace(/[\\/:*?
 function errMsg(e){
   const c = e && e.code, st = e && e.status;
   if(c==="too_large") return "Fail terlalu besar. Pastikan setiap fail kurang daripada 100 MB.";
-  if(st===403 || c==="accessDenied") return L("Anda tidak mempunyai kebenaran menulis pada folder OneDrive. Minta pemilik berkongsi folder dengan “Can edit”.","You don't have permission to write to the OneDrive folder. Ask the owner to share it with “Can edit”.");
+  if(st===403 || c==="accessDenied") return L("Tindakan ini tidak dibenarkan oleh OneDrive untuk akaun anda. Tekan “Selaraskan perkongsian OneDrive”, atau minta pemilik (it.helpdesk) log masuk sekali.","OneDrive doesn't allow this action for your account. Press “Sync OneDrive sharing”, or ask the owner (it.helpdesk) to sign in once.");
   if(st===404) return "Fail ini tidak lagi tersedia.";
   if(st===507 || c==="quotaLimitReached") return "Storan penuh. Padam dokumen yang tidak diperlukan, kemudian cuba lagi.";
   if(st===429 || c==="throttledRequest" || c==="activityLimitReached") return "Terlalu banyak permintaan serentak. Tunggu sebentar dan cuba lagi.";
@@ -1565,7 +1574,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.6";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.8";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -1634,6 +1643,7 @@ const gjson = async (path, opt) => { const r = await gfetch(path, opt); return r
 const S = { driveId:"", itemId:"" };
 const INDEX_FILE = "_system/index.json", USERS_FILE = "_admin/users.json", OLD_USERS_FILE = "_system/users.json";
 const SUBS = ["docs","_system","audit","_admin"];
+let usersFile = USERS_FILE;   // normally _admin/users.json; _system/users.json if the admin folder cannot be used
 const enc = rel => rel.split("/").map(encodeURIComponent).join("/");
 const rootPath = () => `/drives/${S.driveId}/items/${S.itemId}`;
 const itemPath = rel => `${rootPath()}:/${enc(rel)}`;
@@ -1653,9 +1663,9 @@ async function ensureDir(rel){
   for(const p of parts){
     const parent = cur; cur = cur ? cur + "/" + p : p;
     if(dirCache.has(cur)) continue;
-    try{ await gjson(itemPath(cur)); dirCache.add(cur); continue; }catch(e){ if(e.status!==404) throw e; }
+    try{ await gjson(itemPath(cur)); dirCache.add(cur); continue; }catch(e){ if(e.status!==404){ e.step = e.step || ("read folder " + cur); throw e; } }
     try{ await gjson(childrenPath(parent), {method:"POST", headers:JSONH, body:JSON.stringify({name:p, folder:{}, "@microsoft.graph.conflictBehavior":"fail"})}); }
-    catch(e){ if(e.status!==409 && e.code!=="nameAlreadyExists") throw e; }
+    catch(e){ if(e.status!==409 && e.code!=="nameAlreadyExists"){ e.step = "create folder " + cur; throw e; } }
     dirCache.add(cur);
   }
 }
@@ -1667,6 +1677,7 @@ async function putSmall(rel, body, type, etag){
   catch(e){
     // some networks block the If-Match header: try once without it (saving still works, only the clash check is lost)
     if(e instanceof TypeError && headers["If-Match"]){ ifMatchOk = false; delete headers["If-Match"]; return gjson(contentPath(rel), {method:"PUT", headers, body}); }
+    if(e && typeof e==="object" && !e.step) e.step = "write " + rel;
     throw e;
   }
 }
@@ -1807,17 +1818,27 @@ function safeTable(ws){
 
 /* users (roles) */
 async function loadUsers(){
-  let r = await readJson(USERS_FILE), old = false;
-  if(!r){ try{ r = await readJson(OLD_USERS_FILE); old = !!r; }catch(e){ r = null; } }   // older installs kept the list in _system
+  let r = null, file = USERS_FILE;
+  try{ r = await readJson(USERS_FILE); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; }   // no access to the admin folder: carry on with the older location
+  if(!r){ try{ const o = await readJson(OLD_USERS_FILE); if(o){ r = o; file = OLD_USERS_FILE; } }catch(e){} }
+  usersFile = r ? file : USERS_FILE;
   state.members = cleanUsers(r && r.data && r.data.users);
-  state.usersCTag = (r && !old) ? r.cTag : "";
+  state.usersCTag = r ? r.cTag : "";
 }
 async function saveUsers(fn){
-  if(!(await readJson(USERS_FILE))){   // first save in the new, admin-only folder: carry the old list over
-    const o = await readJson(OLD_USERS_FILE).catch(()=>null);
-    if(o) await putSmall(USERS_FILE, JSON.stringify({v:1, users:(o.data && o.data.users) || {}}), "application/json");
+  const run = f => mutateJson(f, ()=>({v:1, users:{}}), d=>{ d.users = d.users || {}; return fn(d.users); });
+  let data;
+  if(usersFile === OLD_USERS_FILE){ data = await run(OLD_USERS_FILE); }
+  else{
+    try{ data = await run(USERS_FILE); }
+    catch(e){
+      // The admin folder could not be used. If no list exists there yet, keep the list in _system so adding users still works.
+      const there = await readJson(USERS_FILE).catch(()=>null);
+      if(there) throw e;
+      console.warn("admin folder not usable, using _system/users.json", e);
+      data = await run(OLD_USERS_FILE); usersFile = OLD_USERS_FILE;
+    }
   }
-  const data = await mutateJson(USERS_FILE, ()=>({v:1, users:{}}), d=>{ d.users = d.users || {}; return fn(d.users); });
   state.members = cleanUsers(data && data.users);
 }
 async function searchUsers(q){
@@ -1876,7 +1897,7 @@ function makeGraph(){
         const r = meta ? await readJson(INDEX_FILE) : null;
         idx = cleanIndex(r && r.data); idxCTag = tag; emitDocs(); await syncText();
       }
-      let um = null; try{ um = await gjson(itemPath(USERS_FILE) + "?$select=cTag"); }catch(e){ if(e.status!==404) throw e; }
+      let um = null; try{ um = await gjson(itemPath(usersFile) + "?$select=cTag"); }catch(e){ if(e.status!==404 && e.status!==403) throw e; }
       const ut = um ? um.cTag : "none";
       if(ut !== (state.usersCTag || "none")){ await loadUsers(); applyRole(); if($("#accessDlg").open && state.isAdmin) openAccess(); }
     }finally{ busy = false; }
@@ -2521,7 +2542,7 @@ $("#indexBtn").addEventListener("click", async ()=>{
 /* ---------- upload ---------- */
 let pending = []; let uploading = false;
 $("#uploadBtn").addEventListener("click", openUpload);
-function openUpload(){ if(!state.canWrite) return; pending=[]; ["#upCat","#upRef","#upTags","#upNotes"].forEach(s=>$(s).value=""); $("#upDate").value=""; drawPending(); $("#uploadDlg").showModal(); }
+function openUpload(){ if(!state.canWrite) return; pending=[]; ["#upCat","#upRef","#upTags","#upNotes"].forEach(s=>$(s).value=""); $("#upDate").value=""; renderCatChips("upCat","upCatChips"); drawPending(); $("#uploadDlg").showModal(); }
 function addFiles(files){
   for(const f of files){
     const ext = extOf(f.name);
@@ -2556,7 +2577,7 @@ $("#uploadDlg").addEventListener("cancel", e=>{ if(uploading) e.preventDefault()
 $("#doUpload").addEventListener("click", async ()=>{
   if(uploading || !pending.length) return;
   uploading = true;
-  const shared = { category:$("#upCat").value.trim() || "Lain-lain", docDate:$("#upDate").value || "", ref:$("#upRef").value.trim(), tags:parseTags($("#upTags").value), notes:$("#upNotes").value.trim() };
+  const shared = { category:canonCat($("#upCat").value), docDate:$("#upDate").value || "", ref:$("#upRef").value.trim(), tags:parseTags($("#upTags").value), notes:$("#upNotes").value.trim() };
   pending.forEach(p=>p.status="Menunggu"); drawPending();
   let ok=0, ocrIssue=null;
   const early = backend.kind==="graph";   // upload first, then read the text, so a long OCR never delays the upload
@@ -2839,7 +2860,10 @@ function storagePane(){
       <pre class="cfgsnip" id="cfgSnip">${esc(snip)}</pre><button type="button" class="btn" data-copy="cfgSnip">${L("Salin","Copy")}</button></details>
     <details class="howto"><summary>${L("Cara perkongsian OneDrive berfungsi","How OneDrive sharing works")}</summary>
       <p>${L("Apabila anda menambah pengguna, sistem terus memberi akses kepada folder OneDrive: Pentadbir boleh mengubah semua, Penyunting boleh mengubah dokumen, Pemerhati hanya boleh membaca. Apabila anda membuang pengguna, akses itu ditarik balik. Anda tidak perlu membuka OneDrive.","When you add a user, the system gives them access to the OneDrive folder straight away: Admins can change everything, Editors can change documents, Viewers can only read. When you remove a user, that access is taken back. You never need to open OneDrive.")}</p>
-      <p>${L(`Jika gagal, pemilik (${esc(CFG.ownerEmail||"")}) hanya perlu log masuk sekali dan sistem akan menyelaraskan semua orang.`,`If it ever fails, the owner (${esc(CFG.ownerEmail||"")}) only needs to sign in once and the system will sync everyone.`)}</p></details>`;
+      <p>${L(`Jika gagal, pemilik (${esc(CFG.ownerEmail||"")}) hanya perlu log masuk sekali dan sistem akan menyelaraskan semua orang.`,`If it ever fails, the owner (${esc(CFG.ownerEmail||"")}) only needs to sign in once and the system will sync everyone.`)}</p></details>
+    <h3 class="sec">${L("Semak sambungan","Check connection")}</h3>
+    <p class="sub" style="margin:0 0 8px">${L("Jika tidak dapat menambah pengguna atau menyimpan, tekan butang ini untuk melihat apa yang disekat oleh OneDrive.","If adding users or saving doesn't work, press this to see what OneDrive is blocking.")}</p>
+    <button type="button" class="btn" id="diagBtn">${L("Semak sambungan OneDrive","Check OneDrive connection")}</button><div id="diagOut"></div>`;
 }
 function openAccess(tab){
   const admin = state.isAdmin && state.mode==="cloud";
@@ -2908,6 +2932,15 @@ $("#accessBody").addEventListener("input", async e=>{
 $("#accessBody").addEventListener("click", async e=>{
   if(e.target.closest("#signOutBtn")){ doLogout(); return; }
   if(e.target.closest("#updApp")){ hardRefresh(); return; }
+  const dg = e.target.closest("#diagBtn");
+  if(dg){
+    dg.disabled = true; const t0 = dg.textContent; dg.textContent = L("Memeriksa…","Checking…"); busy(true);
+    try{
+      const rows = await diagnose(), txt = rows.map(r=>`${r.ok ? "OK " : "XX "} ${r.label}: ${r.detail}`).join("\n"), out = $("#diagOut");
+      if(out) out.innerHTML = `<ul class="seclist">${rows.map(r=>`<li class="${r.ok ? "ok" : "warn"}">${esc(r.label)}: ${esc(r.detail)}</li>`).join("")}</ul><details><summary>${L("Laporan teks","Text report")}</summary><pre id="diagTxt" class="diagpre">${esc(txt)}</pre><button type="button" class="btn" data-copy="diagTxt">${L("Salin laporan","Copy report")}</button></details>`;
+    }catch(err){ toast(errMsg(err)); }
+    busy(false); dg.disabled = false; dg.textContent = t0; return;
+  }
   const tg = e.target.closest("#addToggle");
   if(tg){ const box = $("#addBox"); box.hidden = !box.hidden; state.addOpen = !box.hidden; if(!box.hidden) setTimeout(()=>{ const i = $("#memberSearch"); if(i) i.focus(); }, 60); return; }
   const nr = e.target.closest("[data-nr]");
@@ -2936,7 +2969,7 @@ $("#accessBody").addEventListener("click", async e=>{
       try{ await shareUser(id, role); toast(L(`${pp.name||pp.email} ditambah dan dikongsi di OneDrive`,`${pp.name||pp.email} added and shared in OneDrive`)); }
       catch(e2){ console.warn(e2); toast(L(`${pp.name||pp.email} ditambah, tetapi belum dikongsi di OneDrive. `,`${pp.name||pp.email} added, but not shared in OneDrive yet. `) + shareWhy(e2)); }
       openAccess(); }
-    catch(err){ toast(errMsg(err)); a.disabled = false; }
+    catch(err){ console.warn("add user", err); showAddError(err); toast(errMsg(err)); a.disabled = false; }
     return;
   }
   const r = e.target.closest("[data-remove]");
@@ -3386,12 +3419,12 @@ $("#dDownload").addEventListener("click", async e=>{
 /* ---------- edit ---------- */
 $("#dEdit").addEventListener("click", ()=>{
   const d = current; if(!d) return;
-  $("#edTitle").value=d.title||""; $("#edCat").value=d.category||""; $("#edDate").value=d.docDate||""; $("#edRef").value=d.ref||""; $("#edTags").value=(d.tags||[]).join(", "); $("#edNotes").value=d.notes||"";
+  $("#edTitle").value=d.title||""; $("#edCat").value=d.category||""; renderCatChips("edCat","edCatChips"); $("#edDate").value=d.docDate||""; $("#edRef").value=d.ref||""; $("#edTags").value=(d.tags||[]).join(", "); $("#edNotes").value=d.notes||"";
   $("#editDlg").showModal();
 });
 $("#doSave").addEventListener("click", async e=>{
   const d = current; if(!d) return; const b=e.currentTarget; b.disabled=true;
-  const patch = { title:$("#edTitle").value.trim()||d.fileName, category:$("#edCat").value.trim()||"Lain-lain", docDate:$("#edDate").value||"", ref:$("#edRef").value.trim(), tags:parseTags($("#edTags").value), notes:$("#edNotes").value.trim() };
+  const patch = { title:$("#edTitle").value.trim()||d.fileName, category:canonCat($("#edCat").value), docDate:$("#edDate").value||"", ref:$("#edRef").value.trim(), tags:parseTags($("#edTags").value), notes:$("#edNotes").value.trim() };
   try{ await backend.update(d.id, patch); audit("details", {...d, title:patch.title}, ["title","category","docDate","ref","notes"].filter(k=>String(d[k]||"")!==String(patch[k]||"")).concat(String(d.tags||"")!==String(patch.tags)?["tags"]:[]).map(k=>({title:"tajuk",category:"kategori",docDate:"tarikh",ref:"no. rujukan",notes:"catatan",tags:"tag"}[k])).join(", ").replace(/^/, "Diubah: ") ); $("#editDlg").close(); $("#detailDlg").close(); toast("Perubahan disimpan"); }
   catch(err){ toast(errMsg(err)); }
   b.disabled=false;
@@ -3684,8 +3717,10 @@ function openSheet(d){
 }
 function promptSheet(o){
   $("#sheetTitle").textContent = o.title;
-  $("#sheetBody").innerHTML = `<div class="sform"><label>${esc(o.label)}<input id="sheetInput" list="sheetList" value="${esc(o.value||"")}" autocomplete="off"></label><datalist id="sheetList">${(o.list||[]).map(x=>`<option value="${esc(x)}">`).join("")}</datalist><button type="button" class="btn primary" id="sheetOk" style="min-height:48px">${esc(o.ok)}</button></div>`;
+  const pcs = (o.chips||[]).map(c=>`<button type="button" class="catchip" data-pc="${esc(c)}" aria-pressed="false">${esc(c)}</button>`).join("");
+  $("#sheetBody").innerHTML = `<div class="sform">${pcs ? `<div class="catchips" id="pcChips">${pcs}</div>` : ""}<label>${esc(o.label)}<input id="sheetInput" list="sheetList" value="${esc(o.value||"")}" autocomplete="off"></label><datalist id="sheetList">${(o.list||[]).map(x=>`<option value="${esc(x)}">`).join("")}</datalist><button type="button" class="btn primary" id="sheetOk" style="min-height:48px">${esc(o.ok)}</button></div>`;
   openSheetBox(); const inp = $("#sheetInput"); setTimeout(()=>inp.focus(), 60);
+  if(pcs) $("#pcChips").addEventListener("click", e=>{ const b = e.target.closest("[data-pc]"); if(!b) return; inp.value = b.dataset.pc; $("#pcChips").querySelectorAll("[data-pc]").forEach(x=>x.setAttribute("aria-pressed", String(x===b))); });
   const go = async () => { const v = inp.value; closeSheet(); await o.onOk(v); };
   $("#sheetOk").onclick = go; inp.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
 }
@@ -3779,8 +3814,8 @@ $("#bulkBar").addEventListener("click", e=>{
     setSelMode(false); if(ok.length < docs.length) toast(L(`${docs.length-ok.length} dokumen dilangkau (bukan milik anda)`,`${docs.length-ok.length} document(s) skipped (not yours)`));
     scheduleDelete(ok); return;
   }
-  if(k==="cat") promptSheet({title:L("Tukar kategori","Change category"), label:L("Kategori baharu","New category"), list:[...new Set(state.docs.map(d=>d.category).filter(Boolean))], ok:L("Simpan","Save"), onOk: async v=>{
-    v = v.trim().slice(0,80); if(!v) return;
+  if(k==="cat") promptSheet({title:L("Tukar kategori","Change category"), label:L("Kategori baharu","New category"), chips:allCats(), list:allCats(), ok:L("Simpan","Save"), onOk: async v=>{
+    v = String(v||"").trim(); if(!v) return; v = canonCat(v);
     try{ await bulkUpdate(ids, d=>{ d.category = v; }); audit("details", null, L(`${ids.length} dokumen: kategori → ${v}`,`${ids.length} documents: category → ${v}`)); toast(L(`${ids.length} dokumen dikemas kini`,`${ids.length} document(s) updated`)); setSelMode(false); }catch(err){ toast(errMsg(err)); } }});
   if(k==="tag") promptSheet({title:L("Tambah tag","Add tags"), label:L("Tag (asingkan dengan koma)","Tags (separate with commas)"), list:[...new Set(state.docs.flatMap(d=>d.tags||[]))], ok:L("Simpan","Save"), onOk: async v=>{
     const tags = parseTags(v); if(!tags.length) return;
@@ -3859,6 +3894,55 @@ async function checkForUpdate(){
 }
 setTimeout(checkForUpdate, 2500);
 const verLine = () => `<div class="verline"><span>${L("Versi","Version")} ${APP_VERSION}</span><button type="button" class="btn" id="updApp">${L("Kemas kini aplikasi","Update app")}</button></div>`;
+
+/* ---------- clear errors and a connection check ---------- */
+function techLine(e){
+  if(!e) return "-"; const p = [];
+  if(e.step) p.push(String(e.step)); if(e.status) p.push("HTTP " + e.status);
+  if(e.code && String(e.code)!==String(e.status)) p.push(String(e.code)); if(e.message) p.push(String(e.message).slice(0,200));
+  if(!p.length) p.push(String(e)); return p.join(" | ");
+}
+function showAddError(err){
+  const box = $("#addBox"); if(!box) return; let el = $("#addErr");
+  if(!el){ el = document.createElement("div"); el.id = "addErr"; el.className = "adderr"; el.setAttribute("role","alert"); box.appendChild(el); }
+  el.innerHTML = `<b>${L("Tidak dapat menambah pengguna.","Couldn't add the user.")}</b><div>${esc(errMsg(err))}</div><details><summary>${L("Butiran teknikal","Technical details")}</summary><pre id="addErrTxt">${esc(techLine(err))}</pre><button type="button" class="btn" data-copy="addErrTxt">${L("Salin","Copy")}</button></details><p class="sub" style="margin:8px 0 0">${L("Cuba: Urus > Storan > Semak sambungan OneDrive.","Try: Manage > Storage > Check OneDrive connection.")}</p>`;
+}
+async function diagnose(){
+  const rows = [], add = (ok, label, detail) => rows.push({ok, label, detail: detail || ""});
+  const tryit = async (label, fn) => { try{ add(true, label, await fn()); }catch(e){ add(false, label, techLine(e)); } };
+  await tryit(L("Folder utama OneDrive","Main OneDrive folder"), async()=>{ const m = await gjson(rootPath()); return m.name; });
+  for(const n of SUBS){
+    await tryit(`${L("Folder","Folder")} ${n}`, async()=>{ try{ await gjson(itemPath(n)); return L("ada","found"); }catch(e){ if(e.status===404) return L("tiada (akan dicipta bila perlu)","missing (created when needed)"); throw e; } });
+    await tryit(`${L("Tulis dalam","Write in")} ${n}`, async()=>{ const rel = n + "/.tulis-uji.txt"; await putSmall(rel, "ok", "text/plain"); try{ await gfetch(itemPath(rel), {method:"DELETE"}); }catch(e){} return "OK"; });
+  }
+  await tryit(L("Senarai pengguna dibaca dari","User list read from"), async()=>{ await loadUsers(); return `${usersFile} (${state.members.size})`; });
+  await tryit(L("Kebenaran anda pada folder docs","Your access to the docs folder"), async()=>{ const perms = await listPerms(await subId("docs")); const mine = perms.filter(p=>emailsOf(p).includes(lc(state.uid))).map(p=>(p.roles||[]).join("/")); return mine.join(", ") || L("tiada kemasukan terus (mungkin diwarisi)","no direct entry (maybe inherited)"); });
+  return rows;
+}
+/* ---------- categories: tap one or type a new one ---------- */
+const PRESET_CATS = ["DO","Invoice","Minit","Memo","Borang Penyerahan"];
+const catKey = s => String(s||"").trim().replace(/\s+/g," ").toLowerCase();
+function allCats(){
+  const seen = new Set(), out = [];
+  [...PRESET_CATS, ...state.docs.map(d=>d.category)].forEach(c=>{ const t = String(c||"").trim().replace(/\s+/g," "), k = catKey(t); if(!t || k==="lain-lain" || seen.has(k)) return; seen.add(k); out.push(t); });
+  return out;
+}
+function canonCat(v){   // "invoice " becomes "Invoice", so a category never splits into two
+  const t = String(v||"").trim().replace(/\s+/g," ").slice(0,80); if(!t) return "Lain-lain";
+  return allCats().find(c=>catKey(c)===catKey(t)) || t;
+}
+function renderCatChips(inputId, boxId){
+  const inp = document.getElementById(inputId), box = document.getElementById(boxId); if(!inp || !box) return;
+  inp.placeholder = L("Atau taip kategori baharu…","Or type a new category…");
+  const cur = catKey(inp.value);
+  box.innerHTML = allCats().map(c=>`<button type="button" class="catchip" data-cat="${esc(c)}" aria-pressed="${catKey(c)===cur}">${esc(c)}</button>`).join("");
+}
+function wireCatChips(inputId, boxId){
+  const inp = document.getElementById(inputId), box = document.getElementById(boxId);
+  box.addEventListener("click", e=>{ const b = e.target.closest("[data-cat]"); if(!b) return; inp.value = b.getAttribute("aria-pressed")==="true" ? "" : b.dataset.cat; renderCatChips(inputId, boxId); if(typeof buzz==="function") buzz(8); });
+  inp.addEventListener("input", ()=>renderCatChips(inputId, boxId));
+}
+wireCatChips("upCat","upCatChips"); wireCatChips("edCat","edCatChips");
 
 function syncLayout(){ document.querySelectorAll("[data-layout]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.layout===state.layout))); }
 try{ state.layout = localStorage.getItem("syshhb-layout") || (matchMedia("(max-width: 760px)").matches ? "list" : "list"); }catch(e){ state.layout = "list"; }
