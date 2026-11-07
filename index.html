@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-5AOUnv5vsQ5z5yQaLNi48WPHM4y02tVkwltM8wjX3VA=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-TWwZtblJ2zVWu9iuKGV0w6+QsTe49fO6mVnGl6VseBs=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -827,10 +827,27 @@ body{font-size:1rem}
 .catchip:active{transform:scale(.96)}
 .catchip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
 #sheet .catchip[aria-pressed="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.xferbtn2{display:none}
+.xrow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.xrow span{flex:1;font-weight:700}
+.xrow .btn{min-height:44px;padding:6px 14px}
+.xh{margin:14px 0 2px;font-size:1rem;font-family:var(--display)}
+.xsteps{margin:0 0 10px 18px;padding:0;font-size:.92rem;line-height:1.55}
+.impsum{margin:0 0 8px}.impsum .bad{color:var(--danger);font-weight:700}
+.implist{max-height:38vh;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+.improw{padding:8px 10px;border-bottom:1px solid var(--line)}
+.improw:last-child{border-bottom:0}
+.improw b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.improw small{display:block;color:var(--muted);word-break:break-word}
+.improw s{opacity:.7}.improw em{font-style:normal;color:var(--brand);font-weight:700}
+.imperrs{font-size:.85rem;color:var(--danger);max-height:22vh;overflow:auto;padding:6px 2px}
 .verline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 @media (max-width:760px){
   .toolbar select{display:none}
-  .filterbtn{display:flex;grid-column:1/-1;justify-content:center;align-items:center;gap:8px;min-height:48px;font-size:1rem}
+  .filterbtn{display:flex;grid-column:1/2;justify-content:center;align-items:center;gap:8px;min-height:48px;font-size:1rem}
+  .xferbtn2:not([hidden]){display:flex;grid-column:2/3;justify-content:center;align-items:center;gap:6px;min-height:48px;font-size:.95rem}
+  .xferbtn2 svg{width:18px;height:18px}
+  #xferBtn{display:none}
   .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;margin:0 0 12px;padding:0}
   .stat{padding:10px 12px;border-radius:14px;min-width:0}
   .stat .sv,.stat .sl{position:relative;z-index:1}
@@ -921,8 +938,9 @@ body{font-size:1rem}
 
   <div class="toolbar">
     <span class="count" id="count" aria-live="polite"></span>
-    <div class="tbright"><div class="tbtools"><button type="button" class="iconbtn" id="favFilter" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3.5l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.5l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button type="button" class="iconbtn" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><button type="button" class="iconbtn" id="selBtn" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 12.5l3 3 5-6"/></svg></button></div><div class="vtoggle" role="group" aria-label="Susun atur"><button type="button" data-layout="list" aria-label="Paparan senarai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg></button><button type="button" data-layout="grid" aria-label="Paparan kad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></button></div></div>
+    <div class="tbright"><div class="tbtools"><button type="button" class="iconbtn" id="favFilter" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3.5l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.5l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button type="button" class="iconbtn" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button><button type="button" class="iconbtn" id="selBtn" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 12.5l3 3 5-6"/></svg></button><button type="button" class="iconbtn" id="xferBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v14M5 15l3 3 3-3M16 20V6M13 9l3-3 3 3"/></svg></button></div><div class="vtoggle" role="group" aria-label="Susun atur"><button type="button" data-layout="list" aria-label="Paparan senarai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg></button><button type="button" data-layout="grid" aria-label="Paparan kad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg></button></div></div>
     <button type="button" class="btn filterbtn" id="filterBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6.2 7.4V19l-3.6-1.8v-4.8z"/></svg><span></span><i class="fbadge" hidden></i></button>
+    <button type="button" class="btn xferbtn2" id="xferBtn2" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 4v14M5 15l3 3 3-3M16 20V6M13 9l3-3 3 3"/></svg><span></span></button>
     <select id="yearSel" aria-label="Tahun"></select>
     <select id="tagSel" aria-label="Tag"></select>
     <select id="bySel" aria-label="Dimuat naik oleh" hidden></select>
@@ -940,6 +958,7 @@ body{font-size:1rem}
   <main class="list" id="list"><div class="loading">Membuka perpustakaan…</div></main>
 </div>
 
+<input type="file" id="importFile" accept=".xlsx,.xls,.csv,text/csv" hidden>
 <div id="sheet" hidden><div class="sheetbg" data-sheet-close></div><div class="sheetbox" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"><div class="sheethandle"></div><h3 id="sheetTitle"></h3><div id="sheetBody"></div></div></div>
 <div id="bulkBar" hidden><span id="bulkCount"></span><div class="bulkbtns"><button type="button" class="btn" data-bulk="all"></button><button type="button" class="btn" data-bulk="cat"></button><button type="button" class="btn" data-bulk="tag"></button><button type="button" class="btn danger" data-bulk="del"></button><button type="button" class="btn ghost" data-bulk="cancel"></button></div></div>
 <div id="undoBar" hidden role="status"><span id="undoMsg"></span><button type="button" id="undoBtn" class="btn gold"></button><span class="ubar"><i></i></span></div>
@@ -1574,7 +1593,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.8";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.9";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -1938,6 +1957,7 @@ function makeGraph(){
     },
     async update(id, patch){ await mutateIndex(ix=>{ const d = ix.docs[id]; if(!d) return false; Object.assign(d, patch); }); },
     async updateMany(ids, fn){ await mutateIndex(ix=>{ let n = 0; for(const id of ids){ const d = ix.docs[id]; if(d){ fn(d); n++; } } return n ? undefined : false; }); },
+    async updateEach(items){ await mutateIndex(ix=>{ let n = 0; for(const it of items){ const d = ix.docs[it.id]; if(d){ Object.assign(d, it.patch); n++; } } return n ? undefined : false; }); },
     async webUrl(d){ const m = await gjson(itemPath(`docs/${d.id}/${d.storedName || safeName(d.fileName)}`)); return m.webUrl || ""; },
     async remove(d){
       await delItem("docs/" + d.id); await delItem(`_system/text/${d.id}.txt`).catch(()=>{});
@@ -2244,7 +2264,7 @@ function syncNav(){
   $("[data-nav=manage]").hidden = !state.isAdmin;
   $("[data-nav=me]").hidden = state.mode!=="cloud";
 }
-function afterStart(){ $("#uploadBtn").hidden = !state.canWrite; $("#selBtn").hidden = !state.canWrite; if(state.canWrite) $("#fab").dataset.on = ""; syncNav(); render(); }
+function afterStart(){ $("#uploadBtn").hidden = !state.canWrite; $("#selBtn").hidden = !state.canWrite; $("#xferBtn").hidden = $("#xferBtn2").hidden = !state.canWrite; if(state.canWrite) $("#fab").dataset.on = ""; syncNav(); render(); }
 
 /* ---------- search index ---------- */
 function metaHay(d){ return [d.title,d.ref,d.category,(d.tags||[]).join(" "),d.notes,d.fileName].join(" ").toLowerCase(); }
@@ -2787,7 +2807,7 @@ function applyRole(){
   if(state.canWrite && sampler===undefined) sampler = true;
   $("#uploadBtn").hidden = !state.canWrite;
   if(state.canWrite) $("#fab").dataset.on = ""; else delete $("#fab").dataset.on;
-  $("#auditBtn").hidden = !state.isAdmin; $("#manageBtn").hidden = !state.isAdmin; $("#selBtn").hidden = !state.canWrite;
+  $("#auditBtn").hidden = !state.isAdmin; $("#manageBtn").hidden = !state.isAdmin; $("#selBtn").hidden = !state.canWrite; $("#xferBtn").hidden = $("#xferBtn2").hidden = !state.canWrite;
   syncNav(); showWho(); logLogin();
   if(role==="none") showGate("noaccess"); else if(role!=="loading" && gateKind) hideGate();
   if(role==="viewer") banner(L("Anda log masuk sebagai pemerhati. Anda boleh mencari, melihat dan memuat turun dokumen.","You are signed in as a viewer. You can search, view and download documents.")); else banner("");
@@ -3697,7 +3717,7 @@ function labelsMgmt(){
   syncInstallCard(); syncNet(); syncNavActive();
   { const q = $("#q"); if(q) q.placeholder = matchMedia("(max-width:760px)").matches ? L("Cari dokumen…","Search documents…") : L("Cari perkataan dalam fail, tajuk atau no. rujukan","Search words inside files, titles or reference no."); }
   const names = {all:L("Pilih semua","Select all"), cat:L("Kategori","Category"), tag:L("+ Tag","+ Tag"), del:L("Padam","Delete"), cancel:L("Batal","Cancel")};
-  document.querySelectorAll("#bulkBar [data-bulk]").forEach(b=>{ b.textContent = names[b.dataset.bulk]; }); syncFilterBtn();
+  document.querySelectorAll("#bulkBar [data-bulk]").forEach(b=>{ b.textContent = names[b.dataset.bulk]; }); syncFilterBtn(); labelXfer();
   $("#undoBtn").textContent = L("Buat asal","Undo"); $("#dOnedrive").textContent = L("Buka di OneDrive","Open in OneDrive");
   const sb = $("#selBtn"), t = L("Pilih beberapa dokumen","Select several"); sb.title = t; sb.setAttribute("aria-label", t); sb.setAttribute("aria-pressed", String(!!state.selMode));
   const m1 = document.querySelector("#manageBtn span"), m2 = document.querySelector("[data-nav=manage] span"); if(m1) m1.textContent = L("Urus","Manage"); if(m2) m2.textContent = L("Urus","Manage");
@@ -3943,6 +3963,163 @@ function wireCatChips(inputId, boxId){
   inp.addEventListener("input", ()=>renderCatChips(inputId, boxId));
 }
 wireCatChips("upCat","upCatChips"); wireCatChips("edCat","edCatChips");
+
+/* ---------- export and import of document details ---------- */
+const XFER_COLS = [   // key, Malay, English
+  ["id","ID","ID"], ["title","Tajuk","Title"], ["category","Kategori","Category"], ["docDate","Tarikh dokumen","Document date"],
+  ["ref","No. rujukan","Reference no."], ["tags","Tag","Tags"], ["notes","Catatan","Notes"],
+  ["fileName","Nama fail (rujukan sahaja)","File name (reference only)"], ["uploadedByName","Dimuat naik oleh (rujukan sahaja)","Uploaded by (reference only)"], ["uploadedAt","Tarikh muat naik (rujukan sahaja)","Uploaded on (reference only)"]
+];
+const XFER_ALIAS = { id:["id"], title:["tajuk","title","nama","name","nama dokumen"], category:["kategori","category"], docDate:["tarikh dokumen","document date","tarikh","date"], ref:["no. rujukan","no rujukan","rujukan","reference no.","reference no","reference","ref"], tags:["tag","tags"], notes:["catatan","notes","note"] };
+const xferVal = (d,k) => k==="tags" ? (d.tags||[]).join(", ") : k==="uploadedAt" ? String(d.uploadedAt||"").slice(0,10) : String(d[k] ?? "");
+function labelXfer(){
+  const t = L("Eksport / Import","Export / Import"), b = $("#xferBtn"), b2 = $("#xferBtn2");
+  if(b){ b.title = t; b.setAttribute("aria-label", t); } if(b2){ const s = b2.querySelector("span"); if(s) s.textContent = t; }
+}
+function openXfer(){
+  const nAll = state.docs.length, nView = (state.navIds||[]).length;
+  $("#sheetTitle").textContent = L("Eksport / Import butiran","Export / Import details");
+  $("#sheetBody").innerHTML = `<div class="sform">
+    <h4 class="xh">${L("Eksport","Export")}</h4>
+    <div class="xrow"><span>${L("Semua dokumen","All documents")} (${nAll})</span><button type="button" class="btn" data-x="all-xlsx">Excel</button><button type="button" class="btn" data-x="all-csv">CSV</button></div>
+    <div class="xrow"><span>${L("Yang sedang dipaparkan","Currently shown")} (${nView})</span><button type="button" class="btn" data-x="view-xlsx">Excel</button><button type="button" class="btn" data-x="view-csv">CSV</button></div>
+    <h4 class="xh">${L("Import (tukar beramai-ramai)","Import (change in bulk)")}</h4>
+    <button type="button" class="btn primary" data-x="import" style="min-height:48px">${L("Pilih fail untuk import…","Choose a file to import…")}</button>
+    <ol class="xsteps"><li>${L("Eksport ke Excel di atas.","Export to Excel above.")}</li><li>${L("Ubah Tajuk, Kategori, Tarikh dokumen, No. rujukan, Tag atau Catatan. Jangan ubah atau padam lajur ID.","Change Title, Category, Document date, Reference no., Tags or Notes. Do not change or delete the ID column.")}</li><li>${L("Simpan, kemudian pilih fail di bawah. Anda akan melihat semakan sebelum apa-apa diubah.","Save, then choose the file below. You will see a preview before anything changes.")}</li></ol>
+  </div>`;
+  openSheetBox();
+}
+$("#xferBtn").addEventListener("click", openXfer); $("#xferBtn2").addEventListener("click", openXfer);
+async function exportDetails(scope, fmt){
+  const docs = scope==="view" ? (state.navIds||[]).map(id=>state.docs.find(d=>d.id===id)).filter(Boolean) : [...state.docs].sort((a,b)=>String(b.uploadedAt).localeCompare(String(a.uploadedAt)));
+  if(!docs.length){ toast(L("Tiada dokumen untuk dieksport.","There are no documents to export.")); return; }
+  const head = XFER_COLS.map(([k,ms,en])=>L(ms,en)), body = docs.map(d=>XFER_COLS.map(([k])=>xferVal(d,k))), stamp = new Date().toISOString().slice(0,10);
+  if(fmt==="csv"){
+    const cell = v => { let s = String(v ?? ""); if(/^[=+\-@\t\r]/.test(s)) s = "'" + s; return `"${s.replace(/"/g,'""')}"`; };
+    anchorDownload(new Blob(["\ufeff" + [head, ...body].map(r=>r.map(cell).join(",")).join("\r\n")], {type:"text/csv"}), `SYSHHB-dokumen-${stamp}.csv`);
+  } else {
+    await loadXlsx();
+    const ws = XLSX.utils.aoa_to_sheet([head, ...body]); ws["!cols"] = [{wch:16},{wch:40},{wch:18},{wch:16},{wch:18},{wch:24},{wch:40},{wch:28},{wch:24},{wch:16}];
+    const help = XLSX.utils.aoa_to_sheet([
+      [L("Cara menukar butiran beramai-ramai","How to change details in bulk")],
+      [L("1. Ubah sel dalam lajur Tajuk, Kategori, Tarikh dokumen, No. rujukan, Tag atau Catatan.","1. Change cells in Title, Category, Document date, Reference no., Tags or Notes.")],
+      [L("2. JANGAN ubah atau padam lajur ID. Ia menghubungkan setiap baris dengan dokumennya.","2. Do NOT change or delete the ID column. It links each row to its document.")],
+      [L("3. Tarikh: tulis 2026-11-06 atau 06/11/2026 (hari/bulan/tahun). Kosongkan sel untuk membuang tarikh.","3. Dates: write 2026-11-06 or 06/11/2026 (day/month/year). Empty the cell to remove the date.")],
+      [L("4. Tag: asingkan dengan koma.","4. Tags: separate with commas.")],
+      [L("5. Lajur “rujukan sahaja” tidak diimport. Nama fail di OneDrive tidak berubah.","5. Columns marked “reference only” are not imported. File names in OneDrive do not change.")],
+      [L("6. Simpan fail, kemudian pilih Import dalam aplikasi. Anda akan melihat semakan sebelum apa-apa diubah.","6. Save the file, then choose Import in the app. You will see a preview before anything changes.")]
+    ]); help["!cols"] = [{wch:110}];
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, L("Dokumen","Documents")); XLSX.utils.book_append_sheet(wb, help, L("Arahan","Instructions"));
+    anchorDownload(new Blob([XLSX.write(wb, {bookType:"xlsx", type:"array"})], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), `SYSHHB-dokumen-${stamp}.xlsx`);
+  }
+  audit("export", null, L(`${docs.length} dokumen (butiran)`,`${docs.length} documents (details)`));
+  toast(L(`${docs.length} dokumen dieksport`,`${docs.length} document(s) exported`));
+}
+function parseCsv(text){
+  text = text.replace(/^\ufeff/,""); const first = text.split(/\r?\n/,1)[0], cnt = c => (first.match(new RegExp("\\"+c,"g"))||[]).length;
+  const delim = cnt(";") > cnt(",") ? ";" : cnt("\t") > cnt(",") ? "\t" : ",";
+  const rows = []; let row = [], cur = "", q = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c==='"') q = true; else if(c===delim){ row.push(cur); cur = ""; }
+    else if(c==="\n" || c==="\r"){ if(c==="\r" && text[i+1]==="\n") i++; row.push(cur); cur = ""; rows.push(row); row = []; }
+    else cur += c;
+  }
+  if(cur!=="" || row.length){ row.push(cur); rows.push(row); }
+  return rows.map(r=>r.map(s=>s.replace(/^'(?=[=+\-@\t\r])/,"")));
+}
+async function readSheet(file){
+  if(file.size > 8000000) throw new Error(L("Fail terlalu besar untuk diimport.","The file is too big to import."));
+  const buf = await file.arrayBuffer(), name = file.name.toLowerCase();
+  if(name.endsWith(".csv") || file.type==="text/csv") return parseCsv(new TextDecoder("utf-8").decode(buf));
+  await loadXlsx(); const wb = XLSX.read(buf, {type:"array"});
+  for(const sn of wb.SheetNames){
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], {header:1, raw:true, defval:""});
+    if(rows.length && rows[0].some(c=>String(c).trim().toLowerCase()==="id")) return rows;
+  }
+  throw new Error(L("Lajur ID tidak ditemui. Gunakan fail yang dieksport daripada aplikasi ini.","The ID column was not found. Use a file exported from this app."));
+}
+function parseDateCell(v){
+  if(v===null || v===undefined) return {ok:true, val:""};
+  if(typeof v==="number"){ if(v>20000 && v<80000) return {ok:true, val:new Date(Date.UTC(1899,11,30) + Math.floor(v)*86400000).toISOString().slice(0,10)}; return {ok:false}; }
+  const s = String(v).trim(); if(!s) return {ok:true, val:""};
+  let y, m, d, mt;
+  if(mt = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?:[T\s].*)?$/)){ y = +mt[1]; m = +mt[2]; d = +mt[3]; }
+  else if(mt = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2}|\d{4})$/)){ d = +mt[1]; m = +mt[2]; y = +mt[3]; if(y < 100) y += 2000; }
+  else return {ok:false};
+  const dt = new Date(Date.UTC(y, m-1, d));
+  if(dt.getUTCFullYear()!==y || dt.getUTCMonth()!==m-1 || dt.getUTCDate()!==d || y<1900 || y>2100) return {ok:false};
+  return {ok:true, val:`${y}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`};
+}
+function planImport(rows){
+  const norm = s => String(s ?? "").toLowerCase().replace(/\(.*?\)/g,"").replace(/\s+/g," ").trim(), col = {};
+  rows[0].map(norm).forEach((hd,i)=>{ for(const [k,al] of Object.entries(XFER_ALIAS)) if(al.includes(hd) && !(k in col)) col[k] = i; });
+  if(!("id" in col)) return {fatal:L("Lajur ID tidak ditemui. Gunakan fail yang dieksport daripada aplikasi ini.","The ID column was not found. Use a file exported from this app.")};
+  const fields = Object.keys(col).filter(k=>k!=="id"); if(!fields.length) return {fatal:L("Tiada lajur untuk dikemas kini (Tajuk, Kategori, Tarikh dokumen, …).","There are no columns to update (Title, Category, Document date, …).")};
+  const byId = new Map(state.docs.map(d=>[d.id,d])), plan = [], warn = [], seen = new Set(); let read = 0, same = 0;
+  for(let r=1; r<rows.length; r++){
+    const row = rows[r], id = String(row[col.id] ?? "").trim(), line = r + 1;
+    if(!id && row.every(c=>String(c ?? "").trim()==="")) continue; read++;
+    const d = byId.get(id);
+    if(!d){ warn.push(L(`Baris ${line}: ID tidak dijumpai (dilangkau)`,`Row ${line}: ID not found (skipped)`)); continue; }
+    if(seen.has(id)){ warn.push(L(`Baris ${line}: ID berulang (dilangkau)`,`Row ${line}: repeated ID (skipped)`)); continue; } seen.add(id);
+    if(!canEditDoc(d)){ warn.push(L(`Baris ${line}: anda tidak boleh mengubah dokumen ini`,`Row ${line}: you can't change this document`)); continue; }
+    const patch = {}, diffs = [];
+    for(const k of fields){
+      const raw = row[col[k]]; let nv, old;
+      if(k==="title"){ nv = String(raw ?? "").trim().replace(/\s+/g," ").slice(0,300); old = d.title || ""; if(!nv){ warn.push(L(`Baris ${line}: Tajuk kosong (tidak diubah)`,`Row ${line}: empty Title (not changed)`)); continue; } }
+      else if(k==="category"){ nv = canonCat(raw); old = d.category || "Lain-lain"; }
+      else if(k==="docDate"){ const p = parseDateCell(raw); if(!p.ok){ warn.push(L(`Baris ${line}: tarikh “${raw}” tidak sah (tidak diubah)`,`Row ${line}: date “${raw}” is not valid (not changed)`)); continue; } nv = p.val; old = d.docDate || ""; }
+      else if(k==="ref"){ nv = String(raw ?? "").trim().slice(0,120); old = d.ref || ""; }
+      else if(k==="tags"){ nv = parseTags(String(raw ?? "")); old = d.tags || []; if(nv.join("|")===old.join("|")) continue; patch.tags = nv; diffs.push([k, old.join(", "), nv.join(", ")]); continue; }
+      else { nv = String(raw ?? "").trim().slice(0,2000); old = d.notes || ""; }
+      if(nv !== old){ patch[k] = nv; diffs.push([k, old, nv]); }
+    }
+    if(Object.keys(patch).length) plan.push({id, doc:d, patch, diffs}); else same++;
+  }
+  return {plan, warn, read, same};
+}
+let impPlan = null, impBefore = null;
+const fieldName = k => { const f = XFER_COLS.find(c=>c[0]===k); return f ? L(f[1],f[2]) : k; };
+async function updateEach(items){ if(backend.updateEach) return backend.updateEach(items); for(const it of items) await backend.update(it.id, it.patch); }
+function showImportPreview(res){
+  impPlan = res.plan;
+  $("#sheetTitle").textContent = L("Semak sebelum import","Review before import");
+  $("#sheetBody").innerHTML = `<div class="sform"><p class="impsum"><b>${res.plan.length}</b> ${L("dokumen akan dikemas kini","documents will be updated")} · ${res.same} ${L("tiada perubahan","unchanged")}${res.warn.length ? ` · <span class="bad">${res.warn.length} ${L("amaran","warnings")}</span>` : ""}</p>
+    ${res.plan.length ? `<div class="implist">${res.plan.slice(0,60).map(p=>`<div class="improw"><b>${esc(p.doc.title)}</b>${p.diffs.map(([k,o,n])=>`<small>${esc(fieldName(k))}: <s>${esc(o||"–")}</s> → <em>${esc(n||"–")}</em></small>`).join("")}</div>`).join("")}${res.plan.length>60 ? `<p class="sub" style="padding:6px 10px">… +${res.plan.length-60}</p>` : ""}</div>` : `<p class="sub">${L("Tiada perubahan ditemui dalam fail ini.","No changes were found in this file.")}</p>`}
+    ${res.warn.length ? `<details><summary>${L("Amaran","Warnings")} (${res.warn.length})</summary><div class="imperrs">${res.warn.slice(0,40).map(w=>`<div>${esc(w)}</div>`).join("")}</div></details>` : ""}
+    <div class="frow"><button type="button" class="btn" id="impCancel">${L("Batal","Cancel")}</button><button type="button" class="btn primary" id="impGo" ${res.plan.length ? "" : "disabled"}>${L("Gunakan perubahan","Apply changes")}</button></div></div>`;
+  openSheetBox();
+}
+$("#importFile").addEventListener("change", async e=>{
+  const f = e.target.files[0]; e.target.value = ""; if(!f) return;
+  busy(true);
+  try{ const rows = await readSheet(f); if(!rows.length) throw new Error(L("Fail kosong.","The file is empty.")); const res = planImport(rows); if(res.fatal) throw new Error(res.fatal); showImportPreview(res); }
+  catch(err){ toast(errMsg(err)); }
+  busy(false);
+});
+$("#sheet").addEventListener("click", async e=>{
+  const x = e.target.closest("[data-x]");
+  if(x){ const a = x.dataset.x; if(a==="import"){ $("#importFile").click(); return; } const [scope, fmt] = a.split("-"); closeSheet(); try{ await exportDetails(scope, fmt); }catch(err){ toast(errMsg(err)); } return; }
+  if(e.target.closest("#impCancel") || e.target.closest("#impDone")){ closeSheet(); return; }
+  if(e.target.closest("#impGo") && impPlan && impPlan.length){
+    const go = e.target.closest("#impGo"); go.disabled = true; go.textContent = L("Mengemas kini…","Updating…"); busy(true);
+    const plan = impPlan, items = plan.map(p=>({id:p.id, patch:p.patch})), before = plan.map(p=>({id:p.id, patch:Object.fromEntries(Object.keys(p.patch).map(k=>[k, k==="tags" ? [...(p.doc.tags||[])] : (p.doc[k] ?? "")]))}));
+    try{
+      await updateEach(items); impBefore = before; impPlan = null;
+      audit("details", null, L(`${items.length} dokumen dikemas kini melalui import`,`${items.length} documents updated by import`));
+      $("#sheetTitle").textContent = L("Selesai","Done");
+      $("#sheetBody").innerHTML = `<div class="sform"><p class="impsum">✓ <b>${items.length}</b> ${L("dokumen dikemas kini","documents updated")}</p><p class="sub">${L("Tersilap? Tekan Buat asal untuk mengembalikan nilai lama.","Made a mistake? Press Undo to put the old values back.")}</p><div class="frow"><button type="button" class="btn" id="impUndo">${L("Buat asal","Undo")}</button><button type="button" class="btn primary" id="impDone">${L("Selesai","Done")}</button></div></div>`;
+    }catch(err){ toast(errMsg(err)); go.disabled = false; go.textContent = L("Gunakan perubahan","Apply changes"); }
+    busy(false); return;
+  }
+  if(e.target.closest("#impUndo") && impBefore){
+    const b = e.target.closest("#impUndo"); b.disabled = true; busy(true);
+    try{ await updateEach(impBefore); audit("details", null, L(`Import dibuat asal (${impBefore.length} dokumen)`,`Import undone (${impBefore.length} documents)`)); toast(L("Dibuat asal","Undone")); impBefore = null; closeSheet(); }catch(err){ toast(errMsg(err)); b.disabled = false; }
+    busy(false);
+  }
+});
 
 function syncLayout(){ document.querySelectorAll("[data-layout]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.layout===state.layout))); }
 try{ state.layout = localStorage.getItem("syshhb-layout") || (matchMedia("(max-width: 760px)").matches ? "list" : "list"); }catch(e){ state.layout = "list"; }
