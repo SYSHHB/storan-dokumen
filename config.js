@@ -25,7 +25,7 @@ window.APP_CONFIG = {
   // 6. Recommended. Fill this in AFTER the owner has signed in once:
   //    open the app > tap your name > "Storan OneDrive" > "Tetapan untuk config.js" > Copy.
   //    It lets everyone connect straight to the right folder.
-  storage: { driveId: "", itemId: "" },
+  storage: { driveId: "b!R_lPWUdjfEuqzVrRupLxSE47Uqs5BWdEtWJhDv2jn1e619-HvmPEQrnstLIZc1T6", itemId: "01O26XY4VO3OUFH735RRCIC3IXHUKU5DE4" },
 
   // ----- Security settings (the defaults are the safe choice) -----
 
