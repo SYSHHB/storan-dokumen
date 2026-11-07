@@ -63,7 +63,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-YjidwmNC/UYmC1Tmd0jbe8JEXXIsAudPzeb5IJW1JHE=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-LTuIYKe1tpDisXdF2owgOL54Ld/paPfT8YDexaf5MVI=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1593,7 +1593,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.10";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.11";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -1656,13 +1656,13 @@ async function gfetch(path, opt){
     throw {status:res.status, code:(er && er.code) || String(res.status), message:(er && er.message) || res.statusText};
   }
 }
-const gjson = async (path, opt) => { const r = await gfetch(path, opt); return r.status===204 ? null : r.json(); };
+const gjson = async (path, opt) => { const r = await gfetch(path, opt); if(r.status===204) return null; try{ return await r.json(); }catch(e){ throw {status:502, code:"badContent", message:"OneDrive returned a web page instead of data"}; } };
 
 /* Folder in OneDrive that holds everything */
 const S = { driveId:"", itemId:"" };
-const INDEX_FILE = "_system/index.json", USERS_FILE = "_admin/users.json", OLD_USERS_FILE = "_system/users.json";
-const SUBS = ["docs","_system","audit","_admin"];
-let usersFile = USERS_FILE;   // normally _admin/users.json; _system/users.json if the admin folder cannot be used
+const INDEX_FILE = "_system/index.json", USERS_FILE = "pentadbir/users.json", OLD_USERS_FILE = "_system/users.json";
+const SUBS = ["docs","_system","audit","pentadbir"];
+let usersFile = USERS_FILE;   // normally pentadbir/users.json; _system/users.json if the admin folder cannot be used
 const enc = rel => rel.split("/").map(encodeURIComponent).join("/");
 const rootPath = () => `/drives/${S.driveId}/items/${S.itemId}`;
 const itemPath = rel => `${rootPath()}:/${enc(rel)}`;
@@ -1726,7 +1726,8 @@ async function readJson(rel, fresh){
   let meta; try{ meta = await gjson(itemPath(rel)); }catch(e){ if(e.status===404) return null; throw e; }
   const res = await fetchUrlOrContent(meta, rel, fresh);
   const txt = await res.text(); if(txt.length > 25000000) throw {status:413, code:"too_large", message:"file too big"};
-  return {data: JSON.parse(txt), etag: meta.eTag, cTag: meta.cTag, id: meta.id};
+  let data; try{ data = JSON.parse(txt); }catch(e){ throw {status:502, code:"badContent", message:"OneDrive returned a web page instead of data", step:"read " + rel}; }
+  return {data, etag: meta.eTag, cTag: meta.cTag, id: meta.id};
 }
 async function mutateJson(rel, def, fn){
   for(let k=0; k<6; k++){
@@ -1837,17 +1838,27 @@ function safeTable(ws){
 }
 
 /* users (roles) */
+const noUse = e => !!e && (e.status===401 || e.status===403 || e.status===404 || e.status===502 || e.code==="badContent" || e.code==="UnknownError");   // the folder cannot be used by this account
 async function loadUsers(opts){
   let a = null, b = null;
   try{
-    try{ a = await readJson(USERS_FILE, true); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; }   // no access to the admin folder: carry on with the older location
-    if(!a){ try{ b = await readJson(OLD_USERS_FILE, true); }catch(e){ if(!(e && (e.status===401 || e.status===403))) throw e; } }
+    try{ a = await readJson(USERS_FILE, true); }catch(e){ if(!noUse(e)) throw e; }
+    if(!a){ try{ b = await readJson(OLD_USERS_FILE, true); }catch(e){ if(!noUse(e)) throw e; } }
   }catch(e){ state.usersOk = false; throw e; }
   if(!a && !b && opts && opts.poll && state.members && state.members.size) return;   // a hiccup while checking: keep the list we have
   const r = a || b; usersFile = a ? USERS_FILE : b ? OLD_USERS_FILE : USERS_FILE;
   const users = cleanUsers(r && r.data && r.data.users), fix = applyPending(users);
   state.members = users; state.usersCTag = r ? r.cTag : ""; state.usersOk = true;
   if(fix.length) setTimeout(()=>repairUsers(fix), 1500);
+}
+// older installs kept the list in _system: copy it into the admin-only folder the first time an admin saves
+async function tryMigrateUsers(){
+  try{
+    const there = await readJson(USERS_FILE).catch(()=>"unknown"); if(there) return;   // already there, or cannot tell: leave it
+    const o = await readJson(OLD_USERS_FILE, true); if(!o) return;
+    await putSmall(USERS_FILE, JSON.stringify({v:1, users:(o.data && o.data.users) || {}}), "application/json");
+    usersFile = USERS_FILE;
+  }catch(e){ console.warn("could not move the user list to the admin folder", e); }
 }
 async function loadUsersRetry(){
   const delays = [800,1600,3200];
@@ -1863,6 +1874,7 @@ async function loadUsersRetry(){
 async function saveUsers(fn, check){
   const run = f => mutateJson(f, ()=>({v:1, users:{}}), d=>{ d.users = d.users || {}; return fn(d.users); });
   let data;
+  if(usersFile === OLD_USERS_FILE && state.isAdmin) await tryMigrateUsers();
   if(usersFile === OLD_USERS_FILE){ data = await run(OLD_USERS_FILE); }
   else{
     try{ data = await run(USERS_FILE); }
@@ -2057,11 +2069,11 @@ async function shareOn(id, email, role, perms){
   return "invited";
 }
 // Admin and Editor can change files, Viewer can only read. Everyone can write to the audit folder so their activity is logged.
-// What each role gets in OneDrive. Only admins can write in the root or the _admin folder (the user list), so an editor cannot make themselves admin.
+// What each role gets in OneDrive. Only admins can write in the root or the pentadbir folder (the user list), so an editor cannot make themselves admin.
 const LEVELS = {
-  admin:    {root:"write", docs:"write", _system:"write", audit:"write", _admin:"write"},
-  uploader: {root:"read",  docs:"write", _system:"write", audit:"write", _admin:"read"},
-  viewer:   {root:"read",  docs:"read",  _system:"read",  audit:"write", _admin:"read"}
+  admin:    {root:"write", docs:"write", _system:"write", audit:"write", pentadbir:"write"},
+  uploader: {root:"read",  docs:"write", _system:"write", audit:"write", pentadbir:"read"},
+  viewer:   {root:"read",  docs:"read",  _system:"read",  audit:"write", pentadbir:"read"}
 };
 async function shareUser(email, appRole, cache){
   const lv = LEVELS[appRole==="viewer" ? "viewer" : appRole==="admin" ? "admin" : "uploader"]; let changed = false;
