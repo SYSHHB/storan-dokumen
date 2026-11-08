@@ -1,5 +1,12 @@
-// Minimal service worker: lets phones offer "Install app". It does not cache anything,
-// so people always get the latest version of the site.
-self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
-self.addEventListener("fetch", () => {});
+const CACHE = 'syshhb-portal-v6';
+const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png'];
+self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))));
+  self.clients.claim();
+});
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
+  e.respondWith(fetch(e.request).then(r => { const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); return r; })
+    .catch(() => caches.match(e.request).then(r => r || caches.match('./index.html'))));
+});

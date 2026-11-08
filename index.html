@@ -3,7 +3,7 @@
 <head>
 <meta name="theme-color" content="#0B331D">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="icon" type="image/png" href="emblem-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="referrer" content="no-referrer">
 <meta name="application-name" content="SYSHHB IT Documents">
@@ -15,9 +15,10 @@ html{background:#0B331D}
 #splash{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 0%,#14572B 0%,#0B331D 55%,#071f12 100%);color:#fff;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .4s ease,visibility .4s}
 #splash.done{opacity:0;visibility:hidden;pointer-events:none}
 .sp-awning{position:absolute;left:0;right:0;top:0;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='16' viewBox='0 0 44 16'%3E%3Cpath d='M0 0H44A22 15 0 0 1 0 0Z' fill='%23FCEE33' stroke='%23A8986F' stroke-width='1.2'/%3E%3Cpath d='M22 0V15M22 0Q11 5 8 12M22 0Q33 5 36 12' fill='none' stroke='%23A8986F' stroke-width='.9'/%3E%3C/svg%3E") repeat-x;background-size:44px 16px}
-.sp-body{text-align:center;padding:24px;max-width:420px}
-.sp-logo{position:relative;width:150px;height:150px;margin:0 auto 20px;display:grid;place-items:center}
-.sp-logo img{width:96px;height:96px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #A8986F,0 0 0 7px rgba(252,238,51,.35)}
+#splash{--e:min(30vw,170px);--lh:calc(var(--e)*1.6)}
+.sp-body{position:absolute;left:0;right:0;top:50%;margin:0 auto;transform:translateY(calc(var(--lh) / -2));text-align:center;padding:0 24px;max-width:420px}
+.sp-logo{position:relative;width:var(--lh);height:var(--lh);margin:0 auto 18px;display:grid;place-items:center}
+.sp-logo img{width:calc(var(--e) - 8px);height:calc(var(--e) - 8px);border-radius:50%;background:#fff;box-shadow:0 0 0 4px #A8986F,0 0 0 7px rgba(252,238,51,.35)}
 .sp-ring{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Cdefs%3E%3Cg id='u'%3E%3Cpath d='M6 30C6 16 18 6 32 6s26 10 26 24q-6.5 7-13 0q-6.5 7-13 0q-6.5 7-13 0q-6.5 7-13 0z' fill='%23FCEE33' stroke='%23A8986F' stroke-width='2.4'/%3E%3Cpath d='M32 6V30M32 6C24 12 20 22 19 30M32 6C40 12 44 22 45 30' fill='none' stroke='%23A8986F' stroke-width='1.8'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23u' transform='rotate(0 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(30 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(60 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(90 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(120 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(150 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(180 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(210 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(240 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(270 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(300 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3Cuse href='%23u' transform='rotate(330 150 150) translate(150 20) scale(.62) translate(-32 -30)'/%3E%3C/svg%3E") no-repeat center/contain;animation:sp-spin 16s linear infinite}
 .sp-title{font-size:1.5rem;line-height:1.2;margin:0 0 6px;font-weight:800;letter-spacing:.01em}
 .sp-sub{margin:0 0 24px;color:#FCEE33;font-weight:600;font-size:.9rem}
@@ -33,6 +34,8 @@ html:not([data-lang="en"]) .sp-en{display:none}
 @keyframes sp-slide{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
 @media (prefers-reduced-motion:reduce){.sp-ring,.sp-bar i{animation:none}.sp-bar i{width:100%}}
 body.splashing{overflow:hidden}
+@media (max-height:700px){.sp-title{font-size:1.25rem}.sp-sub{margin-bottom:12px}.sp-steps{margin-bottom:8px}}
+@media (max-height:600px){.sp-steps{display:none}}
 .sp-bar{position:relative}
 .sp-bar i{display:none}
 .sp-bar b{position:absolute;left:0;top:0;height:100%;width:6%;border-radius:99px;background:linear-gradient(90deg,#30B448,#FCEE33);transition:width .6s cubic-bezier(.2,.8,.2,1)}
@@ -63,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-1N84DU2Yx5EguObiKt82ecnQUfOx6dpQapHyKLo3MgY=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-eGolyBCxpjEngKVc20WQV9ApEfRZ9VOM+Z7EsdG+yVY=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -725,6 +728,7 @@ body.selmode .star,body.selmode .more{opacity:.3;pointer-events:none}
 .sact:hover,.sact:active{background:var(--sunk)}
 .sact svg{width:22px;height:22px;color:var(--muted);flex-shrink:0}
 .sact.danger,.sact.danger svg{color:var(--danger)}
+.sact.muted{opacity:.6}
 .sform{display:flex;flex-direction:column;gap:12px;padding-bottom:6px}
 .sform label{display:block;font-weight:700}
 .sform input{margin-top:6px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-height:48px;width:100%;font-weight:400}
@@ -860,6 +864,23 @@ body{font-size:1rem}
   #viewBar .seg button{font-size:0;padding:9px 12px;gap:0}
   .pdfpg{min-width:64px;font-size:.85rem}
 }
+.catdrop{display:none;width:100%;align-items:center;gap:10px;border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:10px 14px;min-height:52px;cursor:pointer;color:var(--ink);text-align:left;margin:0 0 10px}
+.catdrop[hidden]{display:none !important}
+.catdrop .cd-t{font-size:.72rem;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.catdrop .cd-v{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.catdrop .cd-n{background:var(--sunk);border-radius:999px;padding:2px 10px;font-size:.85rem;color:var(--muted)}
+.catdrop svg{width:18px;height:18px;flex-shrink:0;color:var(--muted)}
+.catdrop.on{border-color:var(--brand);background:var(--brand-soft)}
+body.gated .catdrop{display:none !important}
+.catq{margin:0 0 8px;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-height:48px;color:var(--ink)}
+.catlist{display:flex;flex-direction:column}
+.catopt{display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;padding:13px 8px;font-size:1rem;text-align:left;cursor:pointer;min-height:52px;color:var(--ink)}
+.catopt:active{background:var(--sunk)}
+.catopt .c-l{flex:1;min-width:0;overflow-wrap:anywhere}
+.catopt .c-n{color:var(--muted);font-size:.9rem}
+.catopt[aria-selected="true"]{background:var(--brand-soft);font-weight:700;border-radius:10px}
+.catopt[aria-selected="true"]::after{content:"✓";color:var(--brand);font-weight:800}
+@media (max-width:760px){ .catdrop{display:flex} .catdrop[hidden]{display:none !important} #catBar{display:none} }
 .verline{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
 @media (max-width:760px){
   .toolbar select{display:none}
@@ -953,6 +974,7 @@ body{font-size:1rem}
   <div id="installCard" hidden></div>
   <section class="dash" id="dash" hidden></section>
   <div class="tiles" id="tiles" role="group" aria-label="Jenis fail"></div>
+  <button type="button" class="catdrop" id="catDrop" aria-haspopup="listbox" hidden><span class="cd-t">Kategori</span><span class="cd-v"></span><span class="cd-n"></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   <div class="catbar" id="catBar" role="group" aria-label="Kategori"></div>
 
   <div class="toolbar">
@@ -1404,6 +1426,7 @@ function fileToB64(file){ return new Promise((res,rej)=>{ const r=new FileReader
 function b64ToBlob(b64,mime){ const bin=atob(b64); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return new Blob([u],{type:mime}); }
 function anchorDownload(blob,name){ name = String(name||"fail").replace(/[\\/:*?"<>|\u0000-\u001f]/g,"_").slice(0,150) || "fail"; const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); }
 function errMsg(e){
+  if(e && e.code==="notOwner") return L("Anda hanya boleh memadam dokumen yang anda muat naik. Pentadbir boleh memadam semua dokumen.","You can only delete documents you uploaded. Admins can delete every document.");
   const c = e && e.code, st = e && e.status;
   if(c==="too_large") return "Fail terlalu besar. Pastikan setiap fail kurang daripada 100 MB.";
   if(st===403 || c==="accessDenied") return L("Tindakan ini tidak dibenarkan oleh OneDrive untuk akaun anda. Tekan “Selaraskan perkongsian OneDrive”, atau minta pemilik (it.helpdesk) log masuk sekali.","OneDrive doesn't allow this action for your account. Press “Sync OneDrive sharing”, or ask the owner (it.helpdesk) to sign in once.");
@@ -1613,8 +1636,8 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.13";   // also written in version.txt: when they differ, the page refreshes itself once
-const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:30000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
+const APP_VERSION = "2026-11-06.17";   // also written in version.txt: when they differ, the page refreshes itself once
+const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
 const isCfgAdmin = e => !!e && (lc(e)===lc(CFG.ownerEmail) || (CFG.admins||[]).some(a=>lc(a)===lc(e)));
@@ -2038,6 +2061,8 @@ function makeGraph(){
     async updateEach(items){ await mutateIndex(ix=>{ let n = 0; for(const it of items){ const d = ix.docs[it.id]; if(d){ Object.assign(d, it.patch); n++; } } return n ? undefined : false; }); },
     async webUrl(d){ const m = await gjson(itemPath(`docs/${d.id}/${d.storedName || safeName(d.fileName)}`)); return m.webUrl || ""; },
     async remove(d){
+      const cur = idx.docs[d.id] || d;
+      if(!(state.isAdmin || (cur.uploadedBy && cur.uploadedBy===state.uid))) throw {status:403, code:"notOwner", message:"only the uploader or an admin can delete"};
       await delItem("docs/" + d.id); await delItem(`_system/text/${d.id}.txt`).catch(()=>{});
       await mutateIndex(ix=>{ delete ix.docs[d.id]; });
       textMap.delete(d.id); verMap.delete(d.id); if(cache) cache.del(d.id); emitText();
@@ -2549,6 +2574,7 @@ function unread(){ return state.docs.filter(d=>!d.textStatus); }
 function ocrDocs(){ return sampler ? state.docs.filter(needsOcr) : []; }
 function renderIndexBar(){
   const bar = $("#indexBar"); const u = unread().length, o = ocrDocs().length;
+  if(u && state.canWrite) scheduleAutoIndex();
   if(!state.canWrite || !(u+o) || !state.textReady){ if(!state.indexing) bar.hidden = true; return; }
   if(state.indexing) return;
   bar.hidden = false;
@@ -2617,9 +2643,8 @@ document.addEventListener("click", e => {
 });
 
 /* ---------- read existing files ---------- */
-$("#indexBtn").addEventListener("click", async ()=>{
-  if(state.indexing) return; state.indexing = true;
-  const todo = [...new Map([...unread(), ...ocrDocs()].map(d=>[d.id,d])).values()]; $("#indexBtn").hidden = true;
+async function runIndex(todo, auto){
+  if(state.indexing) return; state.indexing = true; $("#indexBtn").hidden = true; if(auto) $("#indexBar").hidden = false;
   let done = 0, found = 0, issue = null;
   for(const d of todo){
     const say = s => { $("#indexMsg").textContent = `${d.title} (${done+1}/${todo.length}): ${s}`; };
@@ -2627,15 +2652,29 @@ $("#indexBtn").addEventListener("click", async ()=>{
     try{
       const blob = await backend.getBlob(d);
       const tx = await extract(blob, d.ext, say);
+      if(auto && !["ok","empty","noocr"].includes(tx.status)){ done++; continue; }   // by itself, only keep clear results: a failed or partial read can be retried by hand
       await backend.setText(d.id, tx); if(tx.text) found++; if(tx.err && !issue) issue = tx.err;
       if(tx.err==="rate_limited" || tx.err==="not_granted" || tx.err==="no_images"){ done++; break; }
-    }catch(e){ try{ await backend.setText(d.id,{text:"",status:"failed",method:"none"}); }catch(_){} }
+    }catch(e){ if(!auto){ try{ await backend.setText(d.id,{text:"",status:"failed",method:"none"}); }catch(_){} } }
     done++;
   }
   state.indexing = false; $("#indexBar").hidden = true;
-  toast(L(`${done} dokumen dibaca. Teks ditemui dalam ${found}.`, `${done} document${done===1?"":"s"} read. Text found in ${found}.`) + (issue ? " " + ocrWhy(issue) : ""));
+  if(!auto) toast(L(`${done} dokumen dibaca. Teks ditemui dalam ${found}.`, `${done} document${done===1?"":"s"} read. Text found in ${found}.`) + (issue ? " " + ocrWhy(issue) : ""));
+  else if(found) toast(L(`${found} dokumen baharu kini boleh dicari.`, `${found} new document${found===1?"":"s"} can now be searched.`));
   render();
-});
+}
+$("#indexBtn").addEventListener("click", ()=>runIndex([...new Map([...unread(), ...ocrDocs()].map(d=>[d.id,d])).values()], false));
+const autoTried = new Set(); let autoIdxTimer = null;
+function scheduleAutoIndex(){
+  if(autoIdxTimer) return;
+  autoIdxTimer = setTimeout(()=>{
+    autoIdxTimer = null;
+    if(!state.canWrite || state.indexing || !state.textReady || document.hidden) return;
+    const old = Date.now() - 120000;   // give the uploader's own phone two minutes to read a new file first
+    const todo = unread().filter(d=>!autoTried.has(d.id) && (d.uploadedBy===state.uid || Date.parse(d.uploadedAt||0) < old)).slice(0, 15);
+    if(!todo.length) return; todo.forEach(d=>autoTried.add(d.id)); runIndex(todo, true);
+  }, 4000);
+}
 
 /* ---------- upload ---------- */
 let pending = []; let uploading = false;
@@ -2899,6 +2938,21 @@ function applyRole(){
   if(role==="viewer") banner(L("Anda log masuk sebagai pemerhati. Anda boleh mencari, melihat dan memuat turun dokumen.","You are signed in as a viewer. You can search, view and download documents.")); else banner("");
   render();
 }
+function selfPanel(){
+  return `<h3 class="sec">${L("Semak akses saya","Check my access")}</h3><p class="sub" style="margin:0 0 8px">${L("Jika anda tidak nampak dokumen orang lain, tekan butang ini dan hantar hasilnya kepada pentadbir.","If you can't see other people's documents, press this and send the result to an admin.")}</p><button type="button" class="btn" id="selfBtn">${L("Semak akses saya","Check my access")}</button><div id="selfOut"></div>`;
+}
+async function selfCheck(){
+  const rows = [], add = (ok, label, detail) => rows.push({ok, label, detail: detail || ""});
+  const tryit = async (label, fn) => { try{ add(true, label, await fn()); }catch(e){ add(false, label, techLine(e)); } };
+  await tryit(L("Peranan anda","Your role"), async()=>`${roleName()} · ${state.uid}`);
+  await tryit(L("Folder utama OneDrive","Main OneDrive folder"), async()=>(await gjson(rootPath())).name);
+  await tryit(L("Senarai dokumen","Document list"), async()=>{ const r = await readJson(INDEX_FILE, true); return Object.keys((r && r.data && r.data.docs) || {}).length + " " + L("dokumen","documents"); });
+  const other = state.docs.find(d=>d.uploadedBy && d.uploadedBy!==state.uid);
+  if(other) await tryit(L("Fail yang dimuat naik oleh orang lain boleh dibaca","Files uploaded by others can be read") + ` (${other.title})`, async()=>{ const m = await gjson(itemPath(`docs/${other.id}/${other.storedName}`)); return `${m.name} · ${fmtSize(m.size||0)}`; });
+  else add(true, L("Fail orang lain","Other people's files"), L("belum ada dokumen daripada orang lain","no documents from other people yet"));
+  await tryit(L("Teks untuk carian dalam fail","Text for searching inside files"), async()=>{ const l = await gjson(childrenPath("_system/text") + "?$top=1"); return (l.value||[]).length ? "OK" : L("kosong","empty"); });
+  return rows;
+}
 function secPanel(open){
   const v = window.__cspViolations || [], cspOn = CFG.csp !== "off", idle = +CFG.idleMinutes > 0;
   const row = (ok, t) => `<li class="${ok ? "ok" : "warn"}">${t}</li>`;
@@ -2997,7 +3051,7 @@ function openAccess(tab){
     const up = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
     if(up.length && state.role!=="none") html += `<h3 class="sec">${L("Siapa yang telah memuat naik","Who has uploaded")}</h3><div class="people">` + up.map(id=>`<button type="button" class="person" data-by="${esc(id)}"><img src="${esc(avatarFor(nameOf(id)))}" alt=""><span class="pn">${esc(nameOf(id)||"Seseorang")}</span><span class="pc">${counts[id]} ${L("dokumen","documents")}</span></button>`).join("") + `</div>`;
   }
-  if(!hub) html += verLine();
+  if(!hub) html += selfPanel() + verLine();
   const keepQ = $("#memberSearch") ? $("#memberSearch").value : "", keepF = $("#userFilter") ? $("#userFilter").value : "";
   $("#accessBody").innerHTML = html;
   if(pick && $("#pickBox .picked span")) $("#pickBox .picked span").textContent = pick.name || pick.email;
@@ -3041,6 +3095,15 @@ $("#accessBody").addEventListener("click", async e=>{
   if(e.target.closest("#updApp")){ hardRefresh(); return; }
   const ru = e.target.closest("#retryUsers");
   if(ru){ ru.disabled = true; try{ await loadUsers(); applyRole(); }catch(err){ toast(errMsg(err)); } openAccess(); return; }
+  const sf = e.target.closest("#selfBtn");
+  if(sf){
+    sf.disabled = true; const t0 = sf.textContent; sf.textContent = L("Memeriksa…","Checking…"); busy(true);
+    try{
+      const rows = await selfCheck(), txt = rows.map(r=>`${r.ok ? "OK " : "XX "} ${r.label}: ${r.detail}`).join("\n"), out = $("#selfOut");
+      if(out) out.innerHTML = `<ul class="seclist">${rows.map(r=>`<li class="${r.ok ? "ok" : "warn"}">${esc(r.label)}: ${esc(r.detail)}</li>`).join("")}</ul><details><summary>${L("Laporan teks","Text report")}</summary><pre id="selfTxt" class="diagpre">${esc(txt)}</pre><button type="button" class="btn" data-copy="selfTxt">${L("Salin laporan","Copy report")}</button></details>`;
+    }catch(err){ toast(errMsg(err)); }
+    busy(false); sf.disabled = false; sf.textContent = t0; return;
+  }
   const dg = e.target.closest("#diagBtn");
   if(dg){
     dg.disabled = true; const t0 = dg.textContent; dg.textContent = L("Memeriksa…","Checking…"); busy(true);
@@ -3462,7 +3525,7 @@ async function openDetail(id){
   $("#dTitle").textContent = d.title;
   const g = (TYPES[d.ext]||{}).g;
   const rows = [["Kategori",d.category||"Tiada kategori"],["No. rujukan",d.ref],["Tarikh dokumen",fmtDate(d.docDate)],["Tag",(d.tags||[]).join(", ")],["Catatan",d.notes],["Fail",`${d.fileName} (${fmtSize(d.size||0)})`],["Ditambah",fmtDate(d.uploadedAt)],["Terakhir diedit",fmtDate(d.editedAt)]];
-  $("#dFacts").innerHTML = rows.filter(r=>r[1]).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${hl(v)}</dd>`).join("") + `<dt hidden id="byLabel">Dimuat naik oleh</dt><dd hidden id="byVal"></dd>`;
+  $("#dFacts").innerHTML = rows.filter(r=>r[1]).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${hl(v)}</dd>`).join("") + (state.canWrite && !canDeleteDoc(d) ? `<dt>${L("Hak padam","Who can delete")}</dt><dd>${L("Pemuat naik atau pentadbir sahaja","Only the uploader or an admin")}</dd>` : "") + `<dt hidden id="byLabel">Dimuat naik oleh</dt><dd hidden id="byVal"></dd>`;
   setEditMode(false);
   $("#dEdit").hidden = !canEditDoc(d); $("#dDelete").hidden = !canDeleteDoc(d);
   $("#dEditFile").hidden = !canEditFile(d);
@@ -3733,7 +3796,7 @@ function syncInstallCard(){
   const key = (ios ? "ios" : "app") + I18N.lang;
   if(box.dataset.k !== key){
     box.dataset.k = key;
-    box.innerHTML = `<div class="icard"><img src="icon-192.png" alt=""><div class="t"><b>${L("Pasang SYSHHB IT Documents","Install SYSHHB IT Documents")}</b><small>${ios ? L("Ketik butang Kongsi di bawah pelayar, kemudian pilih “Tambah ke Skrin Utama”.","Tap the Share button in the browser, then choose “Add to Home Screen”.") : L("Buka terus dari skrin utama telefon anda, tanpa bar pelayar.","Open it straight from your phone's home screen, without the browser bar.")}</small></div>${ios ? "" : `<button type="button" class="btn primary" data-install>${L("Pasang","Install")}</button>`}<button type="button" class="x" data-install-close aria-label="${L("Tutup","Close")}">✕</button></div>`;
+    box.innerHTML = `<div class="icard"><img src="emblem-192.png" alt=""><div class="t"><b>${L("Pasang SYSHHB IT Documents","Install SYSHHB IT Documents")}</b><small>${ios ? L("Ketik butang Kongsi di bawah pelayar, kemudian pilih “Tambah ke Skrin Utama”.","Tap the Share button in the browser, then choose “Add to Home Screen”.") : L("Buka terus dari skrin utama telefon anda, tanpa bar pelayar.","Open it straight from your phone's home screen, without the browser bar.")}</small></div>${ios ? "" : `<button type="button" class="btn primary" data-install>${L("Pasang","Install")}</button>`}<button type="button" class="x" data-install-close aria-label="${L("Tutup","Close")}">✕</button></div>`;
   }
   box.hidden = false;
 }
@@ -3828,6 +3891,7 @@ function openSheet(d){
   if(backend && backend.webUrl) acts.push(["onedrive", L("Buka di OneDrive / aplikasi Office","Open in OneDrive / Office app"), "cloud"]);
   if(canEditDoc(d)){ acts.push(["edit", L("Edit butiran","Edit details"), "edit"]); acts.push(["select", L("Pilih beberapa dokumen","Select several"), "sel"]); }
   if(canDeleteDoc(d)) acts.push(["delete", L("Padam","Delete"), "del", "danger"]);
+  else if(state.canWrite) acts.push(["nodelete", L("Padam: pemuat naik atau pentadbir sahaja","Delete: uploader or admin only"), "del", "muted"]);
   $("#sheetTitle").textContent = d.title;
   $("#sheetBody").innerHTML = acts.map(([k,t,ic,cls])=>`<button type="button" class="sact ${cls||""}" data-act="${k}" data-id="${esc(d.id)}">${ico(ic)}<span>${esc(t)}</span></button>`).join("");
   openSheetBox();
@@ -3857,6 +3921,7 @@ $("#sheet").addEventListener("click", async e=>{
     case "edit": openDetail(d.id); $("#dEdit").click(); break;
     case "select": setSelMode(true, d.id); break;
     case "delete": scheduleDelete([d]); break;
+    case "nodelete": { const who = nameOf(d.uploadedBy) || d.uploadedByName || L("pemuat naik","the uploader"); toast(L(`Fail ini dimuat naik oleh ${who}. Hanya ${who} atau pentadbir boleh memadamnya. Anda boleh melihat, mencari dan memuat turunnya.`,`This file was uploaded by ${who}. Only ${who} or an admin can delete it. You can view, search and download it.`)); break; }
   }
 });
 document.addEventListener("click", e=>{ const m = e.target.closest && e.target.closest("[data-more]"); if(!m) return; e.stopPropagation(); e.preventDefault(); const d = state.docs.find(x=>x.id===m.dataset.more); if(d) openSheet(d); }, true);
@@ -4033,6 +4098,14 @@ async function diagnose(){
     await tryit(`${L("Tulis dalam","Write in")} ${n}`, async()=>{ const rel = n + "/.tulis-uji.txt"; await putSmall(rel, "ok", "text/plain"); try{ await gfetch(itemPath(rel), {method:"DELETE"}); }catch(e){} return "OK"; });
   }
   await tryit(L("Senarai pengguna dibaca dari","User list read from"), async()=>{ await loadUsers(); return `${usersFile} (${state.members.size})`; });
+  await tryit(L("Akses anda pada fail orang lain","Your access to other people's files"), async()=>{
+    const others = state.docs.filter(d=>d.uploadedBy && d.uploadedBy!==state.uid).slice(0,8);
+    if(!others.length) return L("tiada fail orang lain untuk diuji","no one else's files to test");
+    let ok = 0; const bad = [];
+    for(const d of others){ try{ await gjson(itemPath(`docs/${d.id}/${d.storedName}`)); ok++; }catch(e){ bad.push(`${d.title}: HTTP ${e.status||"?"}`); } }
+    if(bad.length) throw {step:`${bad.length} of ${others.length} cannot be opened`, message:bad.slice(0,3).join("; ")};
+    return L(`boleh buka ${ok}/${others.length}`,`can open ${ok}/${others.length}`);
+  });
   await tryit(L("Kebenaran anda pada folder docs","Your access to the docs folder"), async()=>{ const perms = await listPerms(await subId("docs")); const mine = perms.filter(p=>emailsOf(p).includes(lc(state.uid))).map(p=>(p.roles||[]).join("/")); return mine.join(", ") || L("tiada kemasukan terus (mungkin diwarisi)","no direct entry (maybe inherited)"); });
   return rows;
 }
@@ -4295,6 +4368,34 @@ $("#dPreview").addEventListener("click", e=>{
     if(pdfCur && Math.abs(kk-1) > 0.02){ const sl = pv.scrollLeft, st = pv.scrollTop; zoomAdj = Math.min(4, Math.max(0.4, z0*kk)); fitView(); pv.scrollLeft = (sl+cx)*kk - cx; pv.scrollTop = (st+cy)*kk - cy; }
   }, {passive:true});
 }
+
+/* ---------- category dropdown (phones) ---------- */
+function catChips(){ return [...document.querySelectorAll("#catBar .cchip")].map(b=>({el:b, val:b.dataset.val, label:(b.childNodes[0] ? b.childNodes[0].textContent : "").trim(), n:(b.querySelector(".n") ? b.querySelector(".n").textContent : ""), on:b.getAttribute("aria-pressed")==="true"})); }
+function syncCatDrop(){
+  const d = $("#catDrop"); if(!d) return; const cs = catChips();
+  if(!cs.length){ d.hidden = true; return; }
+  const cur = cs.find(c=>c.on) || cs[0];
+  d.hidden = false; d.querySelector(".cd-t").textContent = L("Kategori","Category");
+  d.querySelector(".cd-v").textContent = cur.label; d.querySelector(".cd-n").textContent = cur.n; d.classList.toggle("on", cur.val !== "");
+}
+function openCatSheet(){
+  const cs = catChips(); if(!cs.length) return;
+  $("#sheetTitle").textContent = L("Pilih kategori","Choose a category");
+  $("#sheetBody").innerHTML = (cs.length > 9 ? `<input type="search" id="catQ" class="catq" placeholder="${L("Cari kategori…","Search categories…")}" autocomplete="off">` : "") +
+    `<div class="catlist" role="listbox">${cs.map(c=>`<button type="button" class="catopt" role="option" aria-selected="${c.on}" data-v="${esc(c.val)}"><span class="c-l">${esc(c.label)}</span><span class="c-n">${esc(c.n)}</span></button>`).join("")}</div>`;
+  openSheetBox();
+}
+$("#catDrop").addEventListener("click", openCatSheet);
+$("#sheet").addEventListener("click", e=>{
+  const o = e.target.closest(".catopt"); if(!o) return;
+  const chip = catChips().find(c=>c.val===o.dataset.v); closeSheet(); if(chip) chip.el.click();
+});
+$("#sheet").addEventListener("input", e=>{
+  if(e.target.id!=="catQ") return; const q = e.target.value.trim().toLowerCase();
+  document.querySelectorAll("#sheet .catopt").forEach(o=>{ o.hidden = !!q && !o.textContent.toLowerCase().includes(q); });
+});
+new MutationObserver(syncCatDrop).observe($("#catBar"), {childList:true, subtree:true, attributes:true, attributeFilter:["aria-pressed"]});
+syncCatDrop();
 
 function syncLayout(){ document.querySelectorAll("[data-layout]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.layout===state.layout))); }
 try{ state.layout = localStorage.getItem("syshhb-layout") || (matchMedia("(max-width: 760px)").matches ? "list" : "list"); }catch(e){ state.layout = "list"; }
