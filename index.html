@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta name="theme-color" content="#509E52">
+<meta name="theme-color" content="#649D59">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="emblem-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-+eFAUiwm6rGaoeYOheflPIojmRb8MWnf6ezm3RdYFrA=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-WeDDoDUrPPAM4/t/hJSuQmrzk6LzfWhqS2rdf6bVfuM=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -84,7 +84,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
 <style>
 :root{ --bg:#E4F0E1; --surface:#FFFFFF; --sunk:#EDF4EA; --ink:#12261A; --muted:#4D6352; --line:#CBDDC8;
 --brand:#2F7D33; --brand-ink:#FFFFFF; --gold:#F4ED61; --gold-ink:#1D2A10; --brand-soft:#FFF8C4;
---mark:#F4ED61; --mark-ink:#12261A; --danger:#B3261E; --hero:#509E52; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#A8986F;
+--mark:#F4ED61; --mark-ink:#12261A; --danger:#B3261E; --hero:#649D59; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#A8986F;
 --t-pdf:#C2412D; --t-word:#2B5BB8; --t-excel:#1E7A46; --t-ppt:#B85A22; --t-img:#7A4FB3; --t-text:#56656A; --t-zip:#8A6D1E;
 --page:linear-gradient(180deg,#9CCB98 0,#CFE6CB 260px,#E4F0E1 700px,#EEF5EB 100%);
 --panel-bg:#FFFFFF; --panel-line:#C4D8C0; --panel-shadow:0 2px 8px rgba(20,60,30,.10);
@@ -92,14 +92,14 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
 --display:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#131D16; --surface:#1F2A22; --sunk:#18221B; --ink:#F2F6F1; --muted:#B9C7B9; --line:#3E4D41;
 --brand:#4F9E52; --brand-ink:#FFFFFF; --gold:#F4ED61; --gold-ink:#1D2A10; --brand-soft:#33401F;
---mark:#F4ED61; --mark-ink:#1D2A10; --danger:#FF9088; --hero:#509E52; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#C9B98F;
+--mark:#F4ED61; --mark-ink:#1D2A10; --danger:#FF9088; --hero:#649D59; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#C9B98F;
 --t-pdf:#F07A63; --t-word:#7EA6F2; --t-excel:#5FC48A; --t-ppt:#F0A06A; --t-img:#B794E8; --t-text:#A5B4B8; --t-zip:#D9B95A;
 --page:linear-gradient(180deg,#1B3322 0,#17291C 320px,#131D16 100%);
 --panel-bg:#1F2A22; --panel-line:#2F4034; --panel-shadow:0 2px 10px rgba(0,0,0,.35);
 --stickybg:rgba(24,40,27,.9); --nav-bg:linear-gradient(180deg,#2C4A30,#1C3120); color-scheme:dark; } }
 :root[data-theme="dark"]{ --bg:#131D16; --surface:#1F2A22; --sunk:#18221B; --ink:#F2F6F1; --muted:#B9C7B9; --line:#3E4D41;
 --brand:#4F9E52; --brand-ink:#FFFFFF; --gold:#F4ED61; --gold-ink:#1D2A10; --brand-soft:#33401F;
---mark:#F4ED61; --mark-ink:#1D2A10; --danger:#FF9088; --hero:#509E52; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#C9B98F;
+--mark:#F4ED61; --mark-ink:#1D2A10; --danger:#FF9088; --hero:#649D59; --hero-ink:#FFFFFF; --hero-muted:#E6F4E4; --khaki:#C9B98F;
 --t-pdf:#F07A63; --t-word:#7EA6F2; --t-excel:#5FC48A; --t-ppt:#F0A06A; --t-img:#B794E8; --t-text:#A5B4B8; --t-zip:#D9B95A;
 --page:linear-gradient(180deg,#1B3322 0,#17291C 320px,#131D16 100%);
 --panel-bg:#1F2A22; --panel-line:#2F4034; --panel-shadow:0 2px 10px rgba(0,0,0,.35);
@@ -1104,6 +1104,68 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
   #logoutBtn{display:none}
   .iconsq{width:38px;height:38px}
 }
+
+/* ===== PHONE LAYOUT like SYSHHB IT Helpdesk System ===== */
+.hclock b i{font-style:normal;color:#F4E04D}
+.hclock b{color:#fff}
+.hclock svg{color:#F4E04D}
+@media (min-width:761px){.hclock b{color:#fff}}
+@media (max-width:760px){
+  :root[data-theme="dark"]{--page:linear-gradient(180deg,#4A6E4A 0,#34513A 150px,#2B392A 320px,#202C1E 520px,#162015 760px,#131C14 100%);--nav-bg:#1B251C;--panel-bg:#212B23;--panel-line:#2E3A2E}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--page:linear-gradient(180deg,#4A6E4A 0,#34513A 150px,#2B392A 320px,#202C1E 520px,#162015 760px,#131C14 100%);--nav-bg:#1B251C;--panel-bg:#212B23;--panel-line:#2E3A2E}}
+  /* header panel */
+  .hero{padding:12px 12px 0}
+  .hero .wrap{display:flex;flex-direction:column;align-items:stretch;gap:10px;position:relative;padding:14px 14px 16px;border-radius:30px;border:2px solid #7DA277;background:linear-gradient(180deg,#779C71 0,#4A7345 38%,#2F4D30 100%);box-shadow:inset 0 2px 0 rgba(255,255,255,.22),0 10px 26px rgba(0,0,0,.35)}
+  .hero .seal{display:none}
+  .topctl{order:-1;align-self:flex-end;display:flex;gap:8px;position:static}
+  .iconsq,.themebtn{width:38px;height:38px;border-radius:13px;border:2px solid rgba(255,255,255,.78);background:linear-gradient(180deg,#8FC784 0,#4F9A52 100%);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 3px 8px rgba(0,0,0,.3)}
+  #logoutBtn{display:inline-grid}
+  .hero-title{grid-column:auto;order:0;text-align:center;padding:0}
+  .hero h1{font-size:clamp(1.25rem,5.7vw,1.65rem);text-align:center;text-wrap:balance;line-height:1.15}
+  .hero .orgname{display:block;color:#F1E55A;font-weight:700;font-size:.98rem;margin:.3rem 0 2px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+  .hdates{order:1;gap:10px}
+  .dcard{padding:9px 14px;border-radius:22px;background:#182919;border:1.5px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 8px rgba(0,0,0,.35)}
+  .dcard .dic{display:none}
+  .dcard small{font-size:.78rem;color:#C9D8CB}
+  .dcard b{font-size:1rem}
+  .hclock{display:flex;order:2;align-items:center;justify-content:center;gap:10px;padding:10px 12px;border-radius:999px;background:#182619;border:1.5px solid rgba(255,255,255,.08);box-shadow:inset 0 2px 8px rgba(0,0,0,.35)}
+  .hclock svg{width:24px;height:24px}
+  .hclock b{font-size:1.9rem;font-weight:800;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+  .hclock small{font-size:.8rem;font-weight:800;color:#E4EEE5}
+  /* page title */
+  .pagehead{display:block;margin:20px 4px 4px}
+  .pagehead h2{font-size:1.9rem;font-weight:800;margin:0;letter-spacing:0}
+  .pagehead .ps{margin:.4rem 0 0;font-size:1rem;color:var(--muted)}
+  /* rounder cards */
+  .stat,.tile,.rcard,.meter,.catdrop,.indexbar,.ucard,.gatecard,.banner,.empty,.signin{border-radius:24px}
+  .row,.list.grid .card{border-radius:22px}
+  .search input{border-radius:22px}
+  /* bottom bar with a green pill on the active tab */
+  .bnav{background:var(--nav-bg);border-top:1.5px solid var(--panel-line);padding:6px 8px calc(env(safe-area-inset-bottom,0px) + 6px);gap:4px;box-shadow:0 -6px 20px rgba(0,0,0,.3)}
+  .bnav button[data-nav="upload"]{display:none !important}
+  .bnav button{border-radius:18px;justify-content:center;min-height:58px;color:#CBDACD;font-size:.74rem;gap:3px}
+  .bnav button::before{display:none !important}
+  .bnav button[aria-current="true"]{background:linear-gradient(180deg,#75B06C 0,#477A40 100%);color:#fff;border:2px solid #8DC784;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 3px 10px rgba(0,0,0,.3)}
+  :root[data-theme="light"] .bnav{background:#fff}
+  :root[data-theme="light"] .bnav button{color:#41584A}
+  :root[data-theme="light"] .bnav button[aria-current="true"]{color:#fff}
+  /* floating green + button */
+  body .fab[data-on]{display:grid !important;place-items:center;position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 86px);width:58px;height:58px;padding:0;gap:0;border-radius:50%;font-size:0;color:#0E2A12;background:linear-gradient(180deg,#B7EDB5 0,#6CC36E 100%);border:3px solid #C6EFC5;box-shadow:0 8px 20px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.7);z-index:25}
+  body .fab[data-on] svg{width:30px;height:30px}
+}
+
+@media (max-width:760px){
+  .hdates{grid-template-columns:1fr 1.25fr;gap:8px}
+  .dcard{padding:7px 12px}
+  .dcard small{font-size:.7rem}
+  .dcard b{font-size:.88rem;white-space:nowrap}
+  .hero h1{font-size:clamp(1.2rem,5.3vw,1.5rem)}
+  .hero .orgname{font-size:.92rem}
+  .hclock{padding:7px 12px}
+  .hclock b{font-size:1.55rem}
+  .hclock svg{width:21px;height:21px}
+  .hero .wrap{gap:8px;padding:12px 12px 14px}
+}
 </style>
 </head>
 <body class="splashing">
@@ -1156,7 +1218,7 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
       <div class="dcard"><span class="dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></span><div><small><span>Masihi</span> · <span id="hdDow"></span></small><b id="hdG"></b></div></div>
       <div class="dcard"><span class="dic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></span><div><small><span>Hijrah</span></small><b id="hdH"></b></div></div>
     </div>
-    <div class="hclock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b id="hdClock">--:--:--</b><small>BNT</small></div>
+    <div class="hclock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><b><span id="hdClock">--:--</span><i id="hdSec">:--</i></b><small>BNT</small></div>
   </div>
 </header>
 <div class="wrap content">
@@ -1842,7 +1904,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.21";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.22";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -4054,7 +4116,7 @@ addEventListener("online", ()=>{ syncNet(); toast(L("Kembali dalam talian","Back
       set("hdG", new Intl.DateTimeFormat(en ? "en-GB" : "ms-BN", {timeZone:tz, day:"numeric", month:"short", year:"numeric"}).format(now));
       const off = (+(window.APP_CONFIG && window.APP_CONFIG.hijriOffsetDays) || 0) * 864e5;
       set("hdH", new Intl.DateTimeFormat((en ? "en-GB" : "ms") + "-u-ca-islamic-umalqura", {timeZone:tz, day:"numeric", month:"long", year:"numeric"}).format(new Date(now.getTime() + off)).replace(/ ?(AH|H)$/, "H"));
-      set("hdClock", new Intl.DateTimeFormat("en-GB", {timeZone:tz, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}).format(now));
+      const tm = new Intl.DateTimeFormat("en-GB", {timeZone:tz, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}).format(now); set("hdClock", tm.slice(0,5)); set("hdSec", tm.slice(5));
     }catch(e){}
   };
   tick(); setInterval(tick, 1000); window.__tickHeader = tick;
