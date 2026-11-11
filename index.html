@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-qLbPFFGlm0AJvaldrdHgLFa3lavfyMTMPlsZeSP/j1o=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-+eFAUiwm6rGaoeYOheflPIojmRb8MWnf6ezm3RdYFrA=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1017,7 +1017,7 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
 .sp-steps{display:none}
 .sp-pct{margin:0 0 6px;font-weight:800;font-size:1rem;color:#EAF3EC}
 .sp-thanks{margin:0 0 4px;color:#9FB8A8;font-size:.9rem}
-.sp-msg{margin:6px 0 0;color:#7FA08C;font-size:.8rem;min-height:1.2em}
+.sp-msg{display:none}
 @media (max-height:600px){.sp-logo{margin-bottom:12px}.sp-sub{margin-bottom:14px}}
 @media (prefers-reduced-motion:reduce){.sp-ring::before{animation:none}}
 
@@ -1842,7 +1842,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.20";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.21";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
