@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-OMjZWf1YSyIVvt6kfs6qyHWuJmvj4ZY7u6hOza3Jbdc=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-c7GRmAlOjLTYjJDmvOnwzcfmY6l6s66hyn6NKu57v30=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1001,8 +1001,25 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
 }
 
 /* loading screen in the same colours */
-#splash{background:var(--page),#132114}
+
+/* ===== loading screen like SYSHHB IT Sistem Pemantauan Pembelian ===== */
+#splash{--e:min(44vw,180px);--lh:calc(var(--e)*1.24);background:radial-gradient(110% 70% at 50% 28%,#12532A 0,#0B3A1F 45%,#072A15 100%)}
 .sp-awning{display:none}
+.sp-body{top:50%;transform:translateY(-50%);max-width:380px;padding:0 20px}
+.sp-logo{width:var(--lh);height:var(--lh);margin:0 auto 26px;display:grid;place-items:center}
+.sp-logo img{width:var(--e);height:var(--e);background:#fff;box-shadow:0 0 0 3px #B9AA7A,0 0 0 6px rgba(252,238,51,.28),0 0 40px rgba(252,238,51,.24)}
+.sp-ring{inset:0;background:none;border-radius:50%;border:1.5px solid rgba(252,238,51,.3);animation:none}
+.sp-ring::before{content:"";position:absolute;inset:-1.5px;border-radius:50%;background:conic-gradient(from 0deg,rgba(252,238,51,0) 0 60%,#FCEE33 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2.5px));animation:sp-spin 2.4s linear infinite}
+.sp-title{font-size:clamp(1.45rem,6.4vw,1.95rem);line-height:1.18;text-wrap:balance;text-shadow:0 2px 6px rgba(0,0,0,.4);margin:0 0 10px}
+.sp-sub{color:#F4ED61;font-size:1rem;font-weight:700;margin:0 0 26px}
+.sp-bar{width:min(330px,80vw);height:6px;background:rgba(255,255,255,.14);margin:0 auto 18px}
+.sp-bar b{transition:width .12s linear}
+.sp-steps{display:none}
+.sp-pct{margin:0 0 6px;font-weight:800;font-size:1rem;color:#EAF3EC}
+.sp-thanks{margin:0 0 4px;color:#9FB8A8;font-size:.9rem}
+.sp-msg{margin:6px 0 0;color:#7FA08C;font-size:.8rem;min-height:1.2em}
+@media (max-height:600px){.sp-logo{margin-bottom:12px}.sp-sub{margin-bottom:14px}}
+@media (prefers-reduced-motion:reduce){.sp-ring::before{animation:none}}
 </style>
 </head>
 <body class="splashing">
@@ -1012,7 +1029,9 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
   <p class="sp-sub">Yayasan Sultan Haji Hassanal Bolkiah</p>
   <div class="sp-bar"><i></i><b id="spFill"></b></div>
   <ol class="sp-steps" id="spSteps"><li data-s="1"><span>1</span><em class="sp-ms">Log masuk</em><em class="sp-en">Sign-in</em></li><li data-s="2"><span>2</span><em class="sp-ms">OneDrive</em><em class="sp-en">OneDrive</em></li><li data-s="3"><span>3</span><em class="sp-ms">Dokumen</em><em class="sp-en">Documents</em></li></ol>
-  <p class="sp-msg" id="splashMsg"><span class="sp-ms">Memuatkan…</span><span class="sp-en">Loading…</span></p>
+  <p class="sp-pct"><span class="sp-ms">Memuatkan…</span><span class="sp-en">Loading…</span> <b id="spPct">0%</b></p>
+    <p class="sp-thanks"><span class="sp-ms">Terima kasih kerana bersabar.</span><span class="sp-en">Thank you for your patience.</span></p>
+    <p class="sp-msg" id="splashMsg">&nbsp;</p>
   <div class="sp-slow" id="splashSlow" hidden><p></p><button type="button" id="splashReload"></button></div>
 </div></div>
 <div id="netBar" hidden role="status"></div>
@@ -1727,7 +1746,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.18";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.19";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -3856,9 +3875,20 @@ syncFavUi();
 
 /* ---------- loading screen, text size, install, offline bar, swipe, shortcuts ---------- */
 let splashGone = false;
+let spTarget = 6, spShown = 0, spTimer = 0;
+function spPaint(){ const f = document.getElementById("spFill"), p = document.getElementById("spPct"); if(f) f.style.width = spShown + "%"; if(p) p.textContent = Math.floor(spShown) + "%"; }
+function spRun(){
+  if(spTimer) return;
+  spTimer = setInterval(()=>{
+    if(spShown < spTarget) spShown = Math.min(spTarget, spShown + Math.max(.8, (spTarget - spShown) * .14));
+    else if(spTarget < 100 && spShown < spTarget + 12) spShown += .07;   // slow creep, so it never looks stuck
+    spPaint();
+    if(spShown >= 100){ clearInterval(spTimer); spTimer = 0; }
+  }, 60);
+}
 function setSplashStep(n){
   document.querySelectorAll("#spSteps li").forEach(li=>{ const s = +li.dataset.s; li.className = s < n ? "done" : s === n ? "on" : ""; });
-  const f = document.getElementById("spFill"); if(f) f.style.width = (n >= 4 ? 100 : n <= 0 ? 6 : 14 + (n-1)*30) + "%";
+  spTarget = n >= 4 ? 100 : n <= 0 ? 6 : 14 + (n-1)*30; spRun();
 }
 function setSplash(t){ const el = document.getElementById("splashMsg"); if(el && t) el.textContent = t; }
 function hideSplash(){
