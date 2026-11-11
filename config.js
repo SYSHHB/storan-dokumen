@@ -14,6 +14,10 @@ window.APP_CONFIG = {
   // 3. The account whose OneDrive stores the documents. Always an admin.
   ownerEmail: "it.helpdesk@syayasan.edu.bn",
 
+  // The address of this site. Anyone who opens the old github.io address is sent here.
+  // It must also be added in Microsoft Entra as the SPA redirect URI (with a / at the end).
+  canonicalHost: "document.syayasan.edu.bn",
+
   // 4. Other people who are always admins (they can add and remove users from the website).
   //    They are given access to the OneDrive folder automatically when the owner signs in.
   admins: ["zulfa.zaini@syayasan.edu.bn"],
@@ -25,11 +29,12 @@ window.APP_CONFIG = {
   // 6. Recommended. Fill this in AFTER the owner has signed in once:
   //    open the app > tap your name > "Storan OneDrive" > "Tetapan untuk config.js" > Copy.
   //    It lets everyone connect straight to the right folder.
-  storage: { driveId: "b!R_lPWUdjfEuqzVrRupLxSE47Uqs5BWdEtWJhDv2jn1e619-HvmPEQrnstLIZc1T6", itemId: "01O26XY4VO3OUFH735RRCIC3IXHUKU5DE4" },
+  storage: { driveId: "", itemId: "" },
 
   // ----- Security settings (the defaults are the safe choice) -----
 
   // Sign out automatically after this many minutes without any activity. 0 = never.
+  hijriOffsetDays: 0,   // Hijri date in the header: if it is one day off from the official Brunei date, put 1 or -1 here
   idleMinutes: 30,
 
   // false (safer): you sign in again after closing the browser or the app.

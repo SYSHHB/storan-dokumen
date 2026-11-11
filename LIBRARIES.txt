@@ -1,0 +1,11 @@
+Libraries used by the site
+
+Built into index.html (so no extra file is needed):
+  Microsoft Authentication Library for JavaScript (@azure/msal-browser) 2.38.3, MIT license. Handles the Microsoft sign-in.
+
+Separate file in this package:
+  xlsx.full.min.js  SheetJS Community Edition 0.20.3, Apache-2.0 license. Reads and writes Excel files.
+  It fixes CVE-2023-30533 and CVE-2024-22363. If the file is missing, the site loads the same version from cdn.sheetjs.com.
+
+Loaded from public CDNs only when needed (PDF reader, Word preview, OCR): jsDelivr and cdnjs, fixed versions.
+Do not edit these files by hand.
