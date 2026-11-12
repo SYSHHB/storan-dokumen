@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-UznOoQkTr6UmoNv3fauLEF4IRRjA0OYpldM5vx/JSx8=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-xARHFJMsBSxjaJI+o6Ea2hfQ/5sX87etDMRuktT3zlI=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1264,6 +1264,61 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
   body.gated .gatecard code{background:#141D17;color:#EAF3EC}
 }
 @media (prefers-reduced-motion:reduce){.gh-spark{animation:none;opacity:.6}}
+
+/* ===== PHONE SIGN-IN: one screen, like the Purchase Tracker ===== */
+@media (max-width:760px){
+  body.gated{overflow:hidden}
+  body.gated .gate{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;align-items:stretch;padding:0;margin:0;background:#1A241D;overflow:hidden}
+  .gate[hidden]{display:none !important}
+  .gate-hero{display:flex;flex-direction:column;justify-content:space-between;gap:10px;flex:1 1 auto;min-height:0;position:relative;overflow:hidden;color:#fff;padding:calc(env(safe-area-inset-top,0px) + 16px) 20px 16px;background:radial-gradient(90% 40% at 70% 12%,rgba(160,205,160,.45),rgba(160,205,160,0) 70%),linear-gradient(180deg,#6E9C6C 0,#4C7E4F 34%,#2F5B3A 68%,#264833 100%)}
+  .gh-mark{display:block;position:absolute;left:-6%;top:46%;width:112%;transform:translateY(-50%);opacity:.2;pointer-events:none}
+  .gh-spark{display:none}
+  .gh-brand{position:relative;z-index:2;display:flex;align-items:center;gap:14px;font-size:clamp(1.1rem,5.4vw,1.4rem);line-height:1.15;font-weight:800;text-shadow:0 2px 4px rgba(0,0,0,.3)}
+  .gh-brand img{flex:none;width:clamp(54px,17vw,70px);height:clamp(54px,17vw,70px);border-radius:50%;background:#fff;padding:3px;box-shadow:0 0 0 7px rgba(255,255,255,.14)}
+  .gh-dates{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr}
+  .gh-d{padding-right:12px}
+  .gh-d+.gh-d{border-left:1.5px solid rgba(255,255,255,.35);padding-left:20px}
+  .gh-d b{display:block;font-size:clamp(3.4rem,min(19vw,10.5vh),5.2rem);font-weight:900;line-height:.95;letter-spacing:-.045em;color:#fff}
+  .gh-d b.gh-gold{color:#F1E55C}
+  .gh-d strong{display:block;margin-top:clamp(8px,2vh,16px);font-size:clamp(.95rem,4.5vw,1.2rem);font-weight:800;line-height:1.3}
+  .gh-d small{display:block;margin-top:4px;font-size:clamp(.85rem,4vw,1rem);opacity:.9}
+  .gh-row{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:clamp(1.05rem,5.4vw,1.45rem);font-weight:800;font-variant-numeric:tabular-nums}
+  .gh-tag{position:relative;z-index:2;margin:0;font-size:clamp(.95rem,4.6vw,1.2rem);line-height:1.4}
+  .gate-lang{display:flex;align-self:stretch;margin:14px 20px 0;padding:5px;gap:4px;background:#2A352D;border:1px solid #36443A;border-radius:22px}
+  .gate-lang button{flex:1;background:none;border:0;color:#B9C8BC;font:700 1rem var(--body);padding:12px 8px;border-radius:17px;cursor:pointer}
+  .gate-lang button[aria-pressed="true"]{background:#141D17;color:#fff}
+  body.gated .gatecard{flex:none;width:100%;max-width:none;border:0;border-radius:0;box-shadow:none;background:none;text-align:left;color:#EAF3EC;padding:12px 20px calc(env(safe-area-inset-bottom,0px) + 20px);overflow:auto;max-height:55vh}
+  body.gated .gatecard::before{display:none}
+  body.gated .gatecard p{color:#B9C4BB;margin:0 0 14px;font-size:.95rem}
+  body.gated .gatecard h2{color:#fff}
+  body.gated .gatecard .gc-title,body.gated .gatecard .gc-sub,body.gated .gatecard .gc-tiles,body.gated .gatecard .gc-secure{display:none}
+  body.gated .gatecard .msbtn{width:100%;min-height:58px;border-radius:999px;border:0;background:linear-gradient(180deg,#A9E4A2 0,#82C87D 100%);color:#08260F;font-weight:800;font-size:1.15rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 20px rgba(0,0,0,.35);justify-content:center}
+  body.gated .gatecard .msbtn svg{width:26px;height:26px}
+  body.gated .gatecard .btn{background:#2A382F;color:#fff;border-color:#3A4B40}
+  body.gated .gatecard code{background:#141D17;color:#EAF3EC}
+}
+@media (max-width:760px) and (max-height:650px){
+  .gh-tag{display:none}
+  .gh-d strong{margin-top:6px}
+  body.gated .gatecard p{font-size:.88rem;margin-bottom:10px}
+}
+@media (max-width:760px) and (max-height:560px){
+  .gate-hero .gh-row{display:none}
+}
+
+/* ===== desktop welcome page: colours like the Helpdesk ===== */
+@media (min-width:761px){
+  body.gated .gate{background:radial-gradient(42% 42% at 100% 36%,rgba(34,100,46,.38),rgba(34,100,46,0) 72%),radial-gradient(46% 32% at 4% 100%,rgba(130,108,32,.38),rgba(130,108,32,0) 72%),#132114}
+  .gate-hero{isolation:isolate;background:radial-gradient(52% 30% at 0 0,#92C06E 0,rgba(146,192,110,0) 100%),radial-gradient(40% 30% at 66% 0,rgba(63,170,92,.7),rgba(63,170,92,0) 100%),radial-gradient(42% 36% at 100% 52%,rgba(80,190,100,.55),rgba(80,190,100,0) 100%),radial-gradient(48% 30% at 0 100%,rgba(72,190,92,.8),rgba(72,190,92,0) 100%),radial-gradient(62% 20% at 42% 100%,rgba(12,72,32,.6),rgba(12,72,32,0) 100%),#1F9C43}
+  .gh-mark{mix-blend-mode:multiply;opacity:.38;filter:saturate(.7);left:-1%;width:94%}
+  .gh-d b.gh-gold{color:#FFF23A}
+  body.gated .gatecard{background:#1F2A22;border:1.5px solid #2B392F;box-shadow:0 22px 60px rgba(0,0,0,.5)}
+  body.gated .gatecard::before{background:linear-gradient(90deg,transparent 0,#3FA85C 20%,#D9B64A 52%,#3FA85C 80%,transparent 100%)}
+  body.gated .gatecard .msbtn{background:linear-gradient(180deg,#72D882 0,#43B156 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 16px rgba(50,160,70,.3)}
+  body.gated .gc-tile{background:#243628;border-color:#2F4234}
+  body.gated .gc-tile i{background:linear-gradient(180deg,#27AE4F 0,#1B9340 100%)}
+  .gate-lang{background:#202B23;border-color:#2C3A30}
+}
 </style>
 </head>
 <body class="splashing">
@@ -1751,6 +1806,7 @@ function setLang(l){
   I18N.lang = l; try{ localStorage.setItem("syshhb-lang", l); }catch(e){}
   if(l==="ms") untrTree(document.body);
   render(); applyLang();
+  if(["signin","config","idle","noaccess","nostorage"].includes(gateKind)) showGate(gateKind);   // the sign-in card changes language at once
 }
 document.addEventListener("click", e=>{ const b = e.target.closest("[data-lang]"); if(b) setLang(b.dataset.lang); });
 i18nObserver.observe(document.body, {childList:true, subtree:true});
@@ -2017,7 +2073,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.25";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.27";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -4238,6 +4294,11 @@ window.__gateHero = ()=>{
   });
   const xb = document.getElementById("xferBtn"), nx = document.getElementById("navXfer");
   if(xb && nx){ const sync = ()=>{ nx.hidden = xb.hidden; }; sync(); new MutationObserver(sync).observe(xb, {attributes:true, attributeFilter:["hidden"]}); }
+  const HM = ["Muharam","Safar","Rabiulawal","Rabiulakhir","Jamadilawal","Jamadilakhir","Rejab","Syaaban","Ramadan","Syawal","Zulkaedah","Zulhijjah"];
+  const hijri = d => { try{
+    const p = {}; new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn", {timeZone:"Asia/Brunei", day:"numeric", month:"numeric", year:"numeric"}).formatToParts(d).forEach(x=>{ if(x.type !== "literal") p[x.type] = x.value; });
+    const m = parseInt(p.month, 10); return HM[m-1] ? `${parseInt(p.day, 10)} ${HM[m-1]} ${parseInt(p.year, 10)}H` : "–";
+  }catch(e){ return "–"; } };
   const tick = ()=>{
     const now = new Date(), en = I18N.lang === "en", tz = "Asia/Brunei";
     const set = (id, t)=>{ const e = document.getElementById(id); if(e && e.textContent !== t) e.textContent = t; };
@@ -4245,7 +4306,7 @@ window.__gateHero = ()=>{
       set("hdDow", new Intl.DateTimeFormat(en ? "en-GB" : "ms-BN", {timeZone:tz, weekday:"short"}).format(now));
       set("hdG", new Intl.DateTimeFormat(en ? "en-GB" : "ms-BN", {timeZone:tz, day:"numeric", month:"short", year:"numeric"}).format(now));
       const off = (+(window.APP_CONFIG && window.APP_CONFIG.hijriOffsetDays) || 0) * 864e5;
-      const hj = new Intl.DateTimeFormat("ms-u-ca-islamic-umalqura", {timeZone:tz, day:"numeric", month:"long", year:"numeric"}).format(new Date(now.getTime() + off)).replace(/ ?(AH|H)$/, "H"); set("hdH", hj);
+      const hj = hijri(new Date(now.getTime() + off)); set("hdH", hj);
       set("ghHDay", hj.split(" ")[0]); set("ghHMonth", hj.split(" ").slice(1).join(" "));
       set("ghDay", new Intl.DateTimeFormat("en-GB", {timeZone:tz, day:"numeric"}).format(now)); set("ghMonth", new Intl.DateTimeFormat(en ? "en-GB" : "ms-BN", {timeZone:tz, month:"long", year:"numeric"}).format(now));
       const tm = new Intl.DateTimeFormat("en-GB", {timeZone:tz, hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}).format(now); set("hdClock", tm.slice(0,5)); set("hdSec", tm.slice(5)); set("ghClock", tm + " BNT");
