@@ -6,8 +6,8 @@
 <link rel="icon" type="image/png" href="emblem-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="referrer" content="no-referrer">
-<meta name="application-name" content="SYSHHB IT Documents">
-<meta name="apple-mobile-web-app-title" content="SYSHHB IT Documents">
+<meta name="application-name" content="SYSHHB Documents">
+<meta name="apple-mobile-web-app-title" content="SYSHHB Documents">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <style id="splashcss">
@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-EPNDVK0u9pGWoDp2aHrgMMd7G/spcPeW6VNHQWnDLx8=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-Vq9qF2TZC/EnLk04lT+Q4RQNP1vWXauya9VikuHHQfc=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -83,7 +83,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SYSHHB IT Documents</title>
+<title>SYSHHB Documents</title>
 <style>
 :root{ --bg:#E4F0E1; --surface:#FFFFFF; --sunk:#EDF4EA; --ink:#12261A; --muted:#4D6352; --line:#CBDDC8;
 --brand:#2F7D33; --brand-ink:#FFFFFF; --gold:#F4ED61; --gold-ink:#1D2A10; --brand-soft:#FFF8C4;
@@ -1943,7 +1943,7 @@ const i18nObserver = new MutationObserver(muts=>{
 });
 function applyLang(){
   document.documentElement.lang = I18N.lang;
-  document.title = "SYSHHB IT Documents";
+  document.title = "SYSHHB Documents";
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.lang===I18N.lang)));
   syncThemeBtn();
   { const lb = document.getElementById("langBtn"); if(lb){ const en = I18N.lang === "en"; lb.dataset.lang = en ? "ms" : "en"; lb.textContent = en ? "BM" : "EN"; lb.setAttribute("aria-label", en ? "Bahasa Melayu" : "English"); } }
@@ -2222,7 +2222,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.31";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.32";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -4398,7 +4398,7 @@ function syncInstallCard(){
   const key = (ios ? "ios" : "app") + I18N.lang;
   if(box.dataset.k !== key){
     box.dataset.k = key;
-    box.innerHTML = `<div class="icard"><img src="emblem-192.png" alt=""><div class="t"><b>${L("Pasang SYSHHB IT Documents","Install SYSHHB IT Documents")}</b><small>${ios ? L("Ketik butang Kongsi di bawah pelayar, kemudian pilih “Tambah ke Skrin Utama”.","Tap the Share button in the browser, then choose “Add to Home Screen”.") : L("Buka terus dari skrin utama telefon anda, tanpa bar pelayar.","Open it straight from your phone's home screen, without the browser bar.")}</small></div>${ios ? "" : `<button type="button" class="btn primary" data-install>${L("Pasang","Install")}</button>`}<button type="button" class="x" data-install-close aria-label="${L("Tutup","Close")}">✕</button></div>`;
+    box.innerHTML = `<div class="icard"><img src="emblem-192.png" alt=""><div class="t"><b>${L("Pasang SYSHHB Documents","Install SYSHHB Documents")}</b><small>${ios ? L("Ketik butang Kongsi di bawah pelayar, kemudian pilih “Tambah ke Skrin Utama”.","Tap the Share button in the browser, then choose “Add to Home Screen”.") : L("Buka terus dari skrin utama telefon anda, tanpa bar pelayar.","Open it straight from your phone's home screen, without the browser bar.")}</small></div>${ios ? "" : `<button type="button" class="btn primary" data-install>${L("Pasang","Install")}</button>`}<button type="button" class="x" data-install-close aria-label="${L("Tutup","Close")}">✕</button></div>`;
   }
   box.hidden = false;
 }

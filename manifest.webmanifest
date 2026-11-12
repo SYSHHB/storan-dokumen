@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "SYSHHB IT Documents",
-  "short_name": "SYSHHB IT Documents",
-  "description": "SYSHHB IT Documents: Yayasan Sultan Haji Hassanal Bolkiah document storage with search inside files.",
+  "name": "SYSHHB Documents",
+  "short_name": "SYSHHB Documents",
+  "description": "SYSHHB Documents: Yayasan Sultan Haji Hassanal Bolkiah document storage with search inside files.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
