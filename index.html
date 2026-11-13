@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-<meta name="theme-color" content="#649D59">
+<meta name="theme-color" content="#17321F">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="emblem-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -66,7 +66,7 @@ if(location.protocol==="http:" && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(loc
   var extra = gb && gb !== "https://graph.microsoft.com" ? " " + gb : "";
   var p = [
     "default-src 'none'",
-    "script-src 'self' 'sha256-Vq9qF2TZC/EnLk04lT+Q4RQNP1vWXauya9VikuHHQfc=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
+    "script-src 'self' 'sha256-kho9Nql5W6w2nUlnTBACBJ4KpPU1IoX/TAnhkpTMEHE=' 'wasm-unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://cdn.sheetjs.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "font-src https://fonts.gstatic.com",
     "img-src 'self' data: blob:",
@@ -1006,7 +1006,7 @@ dialog{border:1.5px solid var(--panel-line);border-radius:16px;background:var(--
 /* loading screen in the same colours */
 
 /* ===== loading screen like SYSHHB IT Sistem Pemantauan Pembelian ===== */
-#splash{--e:min(44vw,180px);--lh:calc(var(--e)*1.24);background:radial-gradient(110% 70% at 50% 28%,#12532A 0,#0B3A1F 45%,#072A15 100%)}
+#splash{--e:min(44vw,180px);--lh:calc(var(--e)*1.24);background:radial-gradient(95% 62% at 50% 30%,#1D3B27 0,#17321F 62%,#122A19 100%)}
 .sp-awning{display:none}
 .sp-body{top:50%;transform:translateY(-50%);max-width:380px;padding:0 20px}
 .sp-logo{width:var(--lh);height:var(--lh);margin:0 auto 26px;display:grid;place-items:center}
@@ -2222,7 +2222,7 @@ $("#dOcrBtn").addEventListener("click", async e=>{
 });
 
 /* ---------- Microsoft sign-in (MSAL) and OneDrive (Microsoft Graph) ---------- */
-const APP_VERSION = "2026-11-06.32";   // also written in version.txt: when they differ, the page refreshes itself once
+const APP_VERSION = "2026-11-06.33";   // also written in version.txt: when they differ, the page refreshes itself once
 const CFG = Object.assign({ clientId:"", tenant:"syayasan.edu.bn", ownerEmail:"", admins:[], folderName:"Storan Dokumen SYSHHB", redirectUri:"", graphBase:"https://graph.microsoft.com/v1.0", pollMs:15000, demo:false, rememberSignIn:false, idleMinutes:30, idleCheckMs:5000, csp:"on" }, window.APP_CONFIG || {});
 CFG.storage = Object.assign({driveId:"", itemId:""}, (window.APP_CONFIG && window.APP_CONFIG.storage) || {});
 const lc = s => String(s||"").trim().toLowerCase();
@@ -2800,7 +2800,9 @@ function authMsg(e){
   if(e instanceof TypeError) return L("Tidak dapat menyambung ke Microsoft. Semak sambungan internet.","Couldn't reach Microsoft. Check your internet connection.");
   return raw ? raw.slice(0,300) : L("Berlaku ralat semasa log masuk.","Something went wrong while signing in.");
 }
+function setBar(c){ const m = document.querySelector('meta[name="theme-color"]'); if(m && m.getAttribute("content") !== c) m.setAttribute("content", c); }
 function showGate(kind, msg){
+  setBar(kind === "loading" ? "#17321F" : "#1A933F");
   if(kind==="loading") setSplash(msg); else hideSplash();
   gateKind = kind; document.body.classList.add("gated"); $("#gate").hidden = false;
   const acc = Auth.account;
@@ -2817,7 +2819,7 @@ function showGate(kind, msg){
   $("#gateCard").innerHTML = h;
   if(window.__gateHero) window.__gateHero();
 }
-function hideGate(){ gateKind = ""; document.body.classList.remove("gated"); $("#gate").hidden = true; }
+function hideGate(){ gateKind = ""; document.body.classList.remove("gated"); $("#gate").hidden = true; setBar("#649D59"); }
 async function doLogout(){
   audit("logout", null, L("Log keluar manual","Signed out"));
   try{ await flushAudit(); }catch(e){}

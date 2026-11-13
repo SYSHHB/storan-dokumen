@@ -68,7 +68,7 @@ Paste the line into `config.js` on GitHub (replace the empty `storage: { ... }`)
 
 ## Managing from your phone
 
-Everything below works with one thumb. Install the site on the home screen first (Chrome menu > **Install app**, or Safari **Share > Add to Home Screen**). The app is called **SYSHHB IT Documents**. If you installed it earlier under another name, remove the old icon and install it again to see the new name.
+Everything below works with one thumb. Install the site on the home screen first (Chrome menu > **Install app**, or Safari **Share > Add to Home Screen**). The app is called **SYSHHB Documents**. If you installed it earlier under another name, remove the old icon and install it again to see the new name.
 
 - **Urus** (bottom bar, admins only) has four tabs: **Pengguna** (users), **Aktiviti** (audit log), **Storan** (OneDrive) and **Keselamatan** (security check).
 - **Change someone's role in one tap**: in **Pengguna**, tap **Pentadbir**, **Penyunting** or **Pemerhati** on their card. Their OneDrive access updates by itself. **Buang** removes them.
